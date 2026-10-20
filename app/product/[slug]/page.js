@@ -1,18 +1,18 @@
 import { notFound } from "next/navigation";
 import ProductClient from "../../../components/ProductClient";
-import { products, getProduct } from "../../../lib/data";
+import { getProduct, getCategory, getProducts } from "../../../lib/catalog";
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
+export const revalidate = 60;
 
-export function generateMetadata({ params }) {
-  const p = getProduct(params.slug);
+export async function generateMetadata({ params }) {
+  const p = await getProduct(params.slug);
   return p ? { title: p.name_en, description: p.desc_en } : { title: "Product" };
 }
 
-export default function ProductPage({ params }) {
-  const p = getProduct(params.slug);
+export default async function ProductPage({ params }) {
+  const p = await getProduct(params.slug);
   if (!p) notFound();
-  return <ProductClient product={p} />;
+  const [category, inCat] = await Promise.all([getCategory(p.category), getProducts({ category: p.category, limit: 8 })]);
+  const similar = inCat.filter((x) => x.slug !== p.slug).slice(0, 4);
+  return <ProductClient product={p} category={category} similar={similar} />;
 }

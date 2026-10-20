@@ -3,18 +3,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useApp } from "./Providers";
 import ProductCard from "./ProductCard";
-import { pn } from "../lib/data";
+import { pn } from "../lib/format";
 
-export default function ListClient({ title, products, query }) {
+export default function ListClient({ title, products }) {
   const { t, lang } = useApp();
   const [sort, setSort] = useState("pop");
   const [type, setType] = useState("all");
 
   let list = products.filter((p) => type === "all" || p.type === type);
-  if (query) {
-    const q = query.toLowerCase();
-    list = list.filter((p) => (p.name_en + " " + p.name_hi + " " + p.desc_en + " " + p.type).toLowerCase().includes(q));
-  }
   if (sort === "low") list = [...list].sort((a, b) => a.price - b.price);
   if (sort === "high") list = [...list].sort((a, b) => b.price - a.price);
   if (sort === "name") list = [...list].sort((a, b) => pn(lang, a).localeCompare(pn(lang, b), lang));

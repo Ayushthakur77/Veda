@@ -3,10 +3,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useApp } from "./Providers";
-import { categories, cn } from "../lib/data";
+import { cn } from "../lib/format";
 
-export default function Header() {
-  const { t, lang, setLang, count, ready } = useApp();
+export default function Header({ categories = [] }) {
+  const { t, lang, setLang, count, ready, user, authEnabled } = useApp();
   const [q, setQ] = useState("");
   const router = useRouter();
   const submit = (e) => {
@@ -28,6 +28,9 @@ export default function Header() {
             <button className="lang" onClick={() => setLang(lang === "en" ? "hi" : "en")} aria-label="Change language">
               {lang === "en" ? "हिंदी" : "English"}
             </button>
+            {authEnabled && (user
+              ? <Link href="/account">👤 {t("account")}</Link>
+              : <Link href="/login">{t("login")}</Link>)}
             <Link href="/cart" className="cart-link">
               🛒 {t("cart")}
               {ready && count > 0 && <span className="badge">{count}</span>}

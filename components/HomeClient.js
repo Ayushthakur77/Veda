@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useApp } from "./Providers";
 import ProductCard from "./ProductCard";
-import { banners, categories, products, dealSlugs, getProduct, cn } from "../lib/data";
+import { banners } from "../lib/data";
+import { cn } from "../lib/format";
 
 function useCountdown() {
   const [left, setLeft] = useState(null);
@@ -23,7 +24,7 @@ function useCountdown() {
   return `${p(Math.floor(left / 3600))}:${p(Math.floor((left % 3600) / 60))}:${p(left % 60)}`;
 }
 
-export default function HomeClient() {
+export default function HomeClient({ categories = [], deals = [], popular = [] }) {
   const { t, lang } = useApp();
   const [i, setI] = useState(0);
   const timer = useCountdown();
@@ -34,7 +35,6 @@ export default function HomeClient() {
   }, []);
 
   const b = banners[i];
-  const deals = dealSlugs.map(getProduct).filter(Boolean);
 
   return (
     <div className="container">
@@ -64,20 +64,22 @@ export default function HomeClient() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="sec-head">
-          <h2>{t("dealsOfDay")}</h2>
-          <span className="timer">{t("endsIn")} {timer}</span>
-        </div>
-        <div className="grid">
-          {deals.map((p) => <ProductCard key={p.slug} product={p} deal />)}
-        </div>
-      </section>
+      {deals.length > 0 && (
+        <section className="section">
+          <div className="sec-head">
+            <h2>{t("dealsOfDay")}</h2>
+            <span className="timer">{t("endsIn")} {timer}</span>
+          </div>
+          <div className="grid">
+            {deals.map((p) => <ProductCard key={p.slug} product={p} deal />)}
+          </div>
+        </section>
+      )}
 
       <section className="section">
         <div className="sec-head"><h2>{t("trending")}</h2></div>
         <div className="grid">
-          {products.slice(0, 8).map((p) => <ProductCard key={p.slug} product={p} />)}
+          {popular.map((p) => <ProductCard key={p.slug} product={p} />)}
         </div>
       </section>
 

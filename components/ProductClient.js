@@ -2,18 +2,16 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useApp } from "./Providers";
-import ProductCard, { emojiFor } from "./ProductCard";
-import { getCategory, products, pn, pd, cn, inr } from "../lib/data";
+import ProductCard, { Thumb } from "./ProductCard";
+import { pn, pd, cn, inr } from "../lib/format";
 
-export default function ProductClient({ product }) {
+export default function ProductClient({ product, category: cat, similar = [] }) {
   const { t, lang, add } = useApp();
   const [qty, setQty] = useState(1);
   const [done, setDone] = useState(false);
   const [pin, setPin] = useState("");
   const [msg, setMsg] = useState(null);
-  const cat = getCategory(product.category);
   const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
-  const similar = products.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4);
 
   const checkPin = (e) => {
     e.preventDefault();
@@ -33,10 +31,10 @@ export default function ProductClient({ product }) {
   return (
     <div className="container">
       <div className="crumbs">
-        <Link href="/">{t("home")}</Link> / <Link href={`/category/${cat.slug}`}>{cn(lang, cat)}</Link> / {pn(lang, product)}
+        <Link href="/">{t("home")}</Link> / {cat && <><Link href={`/category/${cat.slug}`}>{cn(lang, cat)}</Link> / </>}{pn(lang, product)}
       </div>
       <div className="pd">
-        <div className="big" aria-hidden>{emojiFor(product)}</div>
+        <div className="big" aria-hidden><Thumb product={product} size={140} /></div>
         <div>
           <span className="chip">{t(product.type)}</span>
           <h1>{pn(lang, product)}</h1>
@@ -64,7 +62,7 @@ export default function ProductClient({ product }) {
               <span>{qty}</span>
               <button onClick={() => setQty(Math.min(20, qty + 1))} aria-label="Increase">+</button>
             </div>
-            <button className="btn" onClick={addToCart}>{done ? "✓ " + t("added") : t("add")}</button>
+            <button className="btn" onClick={addToCart} disabled={!product.inStock}>{!product.inStock ? t("outOfStock") : done ? "✓ " + t("added") : t("add")}</button>
           </div>
         </div>
       </div>

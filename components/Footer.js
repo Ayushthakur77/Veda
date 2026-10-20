@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useApp } from "./Providers";
-import { categories, cn } from "../lib/data";
+import { cn } from "../lib/format";
 
-export default function Footer() {
+export default function Footer({ categories = [] }) {
   const { t, lang } = useApp();
   return (
     <footer className="footer">

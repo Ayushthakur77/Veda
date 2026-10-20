@@ -1,17 +1,31 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useApp } from "./Providers";
-import { emojiFor } from "./ProductCard";
-import { getProduct, pn, inr } from "../lib/data";
+import { Thumb } from "./ProductCard";
+import { pn, inr } from "../lib/format";
 
 export default function CartClient() {
   const { t, lang, cart, setQty, ready } = useApp();
+  const [byslug, setBySlug] = useState({});
+  const [loading, setLoading] = useState(true);
+  const key = Object.keys(cart).sort().join(",");
+  useEffect(() => {
+    if (!ready) return;
+    if (!key) { setLoading(false); return; }
+    let cancelled = false;
+    fetch("/api/products?slugs=" + encodeURIComponent(key))
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) { setBySlug(Object.fromEntries((j.products || []).map((p) => [p.slug, p]))); setLoading(false); } })
+      .catch(() => setLoading(false));
+    return () => { cancelled = true; };
+  }, [key, ready]);
   const items = Object.entries(cart)
-    .map(([slug, qty]) => ({ p: getProduct(slug), qty }))
+    .map(([slug, qty]) => ({ p: byslug[slug], qty }))
     .filter((x) => x.p);
   const subtotal = items.reduce((s, x) => s + x.p.price * x.qty, 0);
 
-  if (!ready) return <div className="container empty" />;
+  if (!ready || loading) return <div className="container empty" />;
   if (items.length === 0)
     return (
       <div className="container empty">
@@ -28,7 +42,7 @@ export default function CartClient() {
         <div>
           {items.map(({ p, qty }) => (
             <div className="line" key={p.slug}>
-              <div className="th" aria-hidden>{emojiFor(p)}</div>
+              <div className="th" aria-hidden style={{ overflow: "hidden" }}><Thumb product={p} size={32} /></div>
               <div>
                 <Link href={`/product/${p.slug}`} style={{ fontWeight: 500 }}>{pn(lang, p)}</Link>
                 <div style={{ color: "var(--muted)", fontSize: 13 }}>{p.pack} · {inr(p.price)}</div>

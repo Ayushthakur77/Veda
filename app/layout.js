@@ -2,6 +2,9 @@ import "./globals.css";
 import Providers from "../components/Providers";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { getCategories } from "../lib/catalog";
+
+export const revalidate = 60;
 
 export const metadata = {
   title: { default: "Veda — Ayurvedic, Homeopathy & Healthcare", template: "%s | Veda" },
@@ -10,14 +13,15 @@ export const metadata = {
 
 export const viewport = { width: "device-width", initialScale: 1, themeColor: "#2f5d46" };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const categories = await getCategories();
   return (
     <html lang="en">
       <body>
         <Providers>
-          <Header />
+          <Header categories={categories} />
           <main>{children}</main>
-          <Footer />
+          <Footer categories={categories} />
         </Providers>
       </body>
     </html>

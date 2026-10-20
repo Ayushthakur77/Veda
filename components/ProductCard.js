@@ -2,9 +2,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useApp } from "./Providers";
-import { categories, getCategory, pn, inr, dealPrice } from "../lib/data";
+import { pn, inr, dealPrice } from "../lib/format";
 
-export const emojiFor = (p) => getCategory(p.category)?.emoji ?? "🌿";
+export function Thumb({ product, size }) {
+  return product.image
+    // eslint-disable-next-line @next/next/no-img-element
+    ? <img src={product.image} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    : <span style={size ? { fontSize: size } : undefined}>{product.emoji}</span>;
+}
 
 export default function ProductCard({ product, deal = false }) {
   const { lang, t, add } = useApp();
@@ -19,7 +24,7 @@ export default function ProductCard({ product, deal = false }) {
   return (
     <div className="card">
       <Link href={`/product/${product.slug}`} className="img" aria-label={pn(lang, product)}>
-        {emojiFor(product)}
+        <Thumb product={product} />
         {off > 0 && <span className="tag">{off}% {t("off")}</span>}
       </Link>
       <div className="body">
@@ -29,7 +34,9 @@ export default function ProductCard({ product, deal = false }) {
           <b>{inr(price)}</b>
           <s>{inr(product.mrp)}</s>
         </div>
-        <button className="btn" onClick={click}>{done ? "✓ " + t("added") : t("add")}</button>
+        <button className="btn" onClick={click} disabled={!product.inStock}>
+          {!product.inStock ? t("outOfStock") : done ? "\u2713 " + t("added") : t("add")}
+        </button>
       </div>
     </div>
   );
