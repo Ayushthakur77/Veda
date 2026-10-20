@@ -1,0 +1,80 @@
+"use client";
+import Link from "next/link";
+import { useState } from "react";
+import { useApp } from "./Providers";
+import ProductCard, { emojiFor } from "./ProductCard";
+import { getCategory, products, pn, pd, cn, inr } from "../lib/data";
+
+export default function ProductClient({ product }) {
+  const { t, lang, add } = useApp();
+  const [qty, setQty] = useState(1);
+  const [done, setDone] = useState(false);
+  const [pin, setPin] = useState("");
+  const [msg, setMsg] = useState(null);
+  const cat = getCategory(product.category);
+  const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+  const similar = products.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4);
+
+  const checkPin = (e) => {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(pin)) return setMsg({ ok: false, text: t("invalidPin") });
+    // Delhi NCR pincodes: Delhi 110xxx, Noida 201301-201310, Gurgaon 122xxx, Ghaziabad 201001-201017, Faridabad 121xxx
+    const n = Number(pin);
+    const ok = (n >= 110001 && n <= 110099) || (n >= 122001 && n <= 122018) || (n >= 201001 && n <= 201017) || (n >= 201301 && n <= 201310) || (n >= 121001 && n <= 121010);
+    setMsg({ ok, text: ok ? t("deliverable") : t("notDeliverable") });
+  };
+
+  const addToCart = () => {
+    add(product.slug, qty);
+    setDone(true);
+    setTimeout(() => setDone(false), 1400);
+  };
+
+  return (
+    <div className="container">
+      <div className="crumbs">
+        <Link href="/">{t("home")}</Link> / <Link href={`/category/${cat.slug}`}>{cn(lang, cat)}</Link> / {pn(lang, product)}
+      </div>
+      <div className="pd">
+        <div className="big" aria-hidden>{emojiFor(product)}</div>
+        <div>
+          <span className="chip">{t(product.type)}</span>
+          <h1>{pn(lang, product)}</h1>
+          <div className="price">
+            <b>{inr(product.price)}</b>
+            <s>{t("mrp")} {inr(product.mrp)}</s>
+            {off > 0 && <em>{off}% {t("off")}</em>}
+          </div>
+          <dl className="meta">
+            <dt>{t("pack")}</dt><dd>{product.pack}</dd>
+            <dt>{t("type")}</dt><dd>{t(product.type)}</dd>
+          </dl>
+          <h3 style={{ fontSize: 16, marginBottom: 4 }}>{t("description")}</h3>
+          <p style={{ color: "var(--muted)" }}>{pd(lang, product)}</p>
+
+          <form className="pin" onSubmit={checkPin}>
+            <input inputMode="numeric" maxLength={6} value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} placeholder={t("pincode")} aria-label={t("pincode")} />
+            <button className="btn ghost" type="submit">{t("check")}</button>
+          </form>
+          <div className={"pin-msg " + (msg ? (msg.ok ? "ok" : "bad") : "")}>{msg?.text}</div>
+
+          <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 18 }}>
+            <div className="qty">
+              <button onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Decrease">−</button>
+              <span>{qty}</span>
+              <button onClick={() => setQty(Math.min(20, qty + 1))} aria-label="Increase">+</button>
+            </div>
+            <button className="btn" onClick={addToCart}>{done ? "✓ " + t("added") : t("add")}</button>
+          </div>
+        </div>
+      </div>
+
+      {similar.length > 0 && (
+        <section className="section">
+          <div className="sec-head"><h2>{t("similar")}</h2></div>
+          <div className="grid">{similar.map((p) => <ProductCard key={p.slug} product={p} />)}</div>
+        </section>
+      )}
+    </div>
+  );
+}
