@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useApp } from "./Providers";
 import ProductCard, { Thumb } from "./ProductCard";
 import { pn, pd, cn, inr } from "../lib/format";
+import { L } from "../lib/content";
 
 export default function ProductClient({ product, category: cat, similar = [] }) {
   const { t, lang, add } = useApp();
@@ -11,6 +12,7 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
   const [done, setDone] = useState(false);
   const [pin, setPin] = useState("");
   const [msg, setMsg] = useState(null);
+  const [tab, setTab] = useState("details");
   const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
 
   const checkPin = (e) => {
@@ -43,17 +45,17 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
             <s>{t("mrp")} {inr(product.mrp)}</s>
             {off > 0 && <em>{off}% {t("off")}</em>}
           </div>
+          <small style={{ color: "var(--muted)" }}>{t("inclTax")}</small>
           <dl className="meta">
             <dt>{t("pack")}</dt><dd>{product.pack}</dd>
             <dt>{t("type")}</dt><dd>{t(product.type)}</dd>
           </dl>
-          <h3 style={{ fontSize: 16, marginBottom: 4 }}>{t("description")}</h3>
-          <p style={{ color: "var(--muted)" }}>{pd(lang, product)}</p>
 
           <form className="pin" onSubmit={checkPin}>
             <input inputMode="numeric" maxLength={6} value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} placeholder={t("pincode")} aria-label={t("pincode")} />
             <button className="btn ghost" type="submit">{t("check")}</button>
           </form>
+          <div className="badges"><span>✅ {t("trust")}</span><span>🚚 {t("trust2")}</span><span>↩️ {t("trust3")}</span></div>
           <div className={"pin-msg " + (msg ? (msg.ok ? "ok" : "bad") : "")}>{msg?.text}</div>
 
           <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 18 }}>
@@ -67,10 +69,30 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
         </div>
       </div>
 
+      <div className="tabs" role="tablist">
+        {["details", "reviews"].map((k) => (
+          <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{t(k)}</button>
+        ))}
+      </div>
+      <div className="tabpane">
+        {tab === "details" ? (
+          <>
+            <h3 style={{ fontSize: 16, marginBottom: 4 }}>{t("description")}</h3>
+            <p>{pd(lang, product)}</p>
+            <p style={{ marginTop: 10, fontSize: 13, color: "var(--muted)" }}>{t("disclaimer")}</p>
+          </>
+        ) : <p>{t("noReviews")}</p>}
+      </div>
+
+      <div className="buybar">
+        <div><b style={{ fontSize: 18 }}>{inr(product.price)}</b><br /><s style={{ color: "var(--muted)", fontSize: 12 }}>{inr(product.mrp)}</s></div>
+        <button className="btn" onClick={addToCart} disabled={!product.inStock}>{!product.inStock ? t("outOfStock") : done ? "✓ " + t("added") : t("add")}</button>
+      </div>
+
       {similar.length > 0 && (
         <section className="section">
           <div className="sec-head"><h2>{t("similar")}</h2></div>
-          <div className="grid">{similar.map((p) => <ProductCard key={p.slug} product={p} />)}</div>
+          <div className="rail">{similar.map((p) => <ProductCard key={p.slug} product={p} />)}</div>
         </section>
       )}
     </div>

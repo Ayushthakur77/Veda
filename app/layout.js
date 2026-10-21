@@ -11,7 +11,7 @@ export const metadata = {
   description: "Ayurvedic, Homeopathy and healthcare essentials delivered across Delhi NCR.",
 };
 
-export const viewport = { width: "device-width", initialScale: 1, themeColor: "#2f5d46" };
+export const viewport = { width: "device-width", initialScale: 1, themeColor: "#1f7a45" };
 
 export default async function RootLayout({ children }) {
   const categories = await getCategories();
