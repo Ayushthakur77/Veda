@@ -29,3 +29,24 @@ Put your mobile number in `ADMIN_PHONES`, log in at `/login`. With `OTP_PROVIDER
 2. Vercel project -> Settings -> Environment Variables: `DATABASE_URL`, `AUTH_SECRET`, `ADMIN_PHONES`, `OTP_PROVIDER`.
 3. Redeploy. Catalogue pages refresh at most every 60 s, and immediately after an admin edit.
 4. For real SMS set `OTP_PROVIDER=msg91`, `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`.
+
+## Using Supabase as the database
+
+Veda talks to Postgres directly from the server, so Supabase works with no code changes.
+
+1. Create a project at supabase.com → **Project Settings → Database → Connection string**.
+   Use the **Session pooler** string (port 5432) — it works from Vercel and from your laptop.
+   Replace `[YOUR-PASSWORD]` with your database password.
+2. On your laptop (in the project folder):
+   ```
+   DATABASE_URL="postgresql://postgres.xxxx:PASSWORD@aws-0-ap-south-1.pooler.supabase.com:5432/postgres" npm run db:migrate
+   DATABASE_URL="…same…" npm run db:seed        # optional sample catalogue
+   ```
+   `db:migrate` is safe to re-run; it creates all tables (including the admin tables) and turns on Row Level Security so Supabase's public REST API can't read your data.
+3. In Vercel → Project → Settings → Environment Variables add `DATABASE_URL` (same string), `AUTH_SECRET` (40+ random chars) and `ADMIN_PHONES` (your 10-digit number), then redeploy.
+
+## Admin panel (`/admin`)
+
+Dashboard · Hub Orders · Track Orders · Returns · Cancellations · Issues · Listings (products) · Categories · Inventory · Payments · Performance · Opportunities · Reports (CSV download).
+Orders move through placed → confirmed → packed → shipped (courier + AWB required) → out for delivery → delivered; cancelling needs a reason.
+"Mark refunded" only updates Veda's records — send the actual refund from the Razorpay dashboard until API refunds are added.

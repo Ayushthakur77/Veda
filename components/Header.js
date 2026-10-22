@@ -2,11 +2,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useApp } from "./Providers";
 import { cn } from "../lib/format";
 
 export default function Header({ categories = [] }) {
   const { t, lang, setLang, count, ready, user, authEnabled } = useApp();
+  const path = usePathname();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -21,6 +23,7 @@ export default function Header({ categories = [] }) {
     if (s) router.push("/search?q=" + encodeURIComponent(s));
   };
   const close = () => setOpen(false);
+  if (path?.startsWith("/admin")) return null;
   return (
     <>
       <header className="header">

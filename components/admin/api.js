@@ -23,3 +23,8 @@ export const inrA = (n) => "₹" + Number(n).toLocaleString("en-IN");
 export function Field({ label, children, wide }) {
   return <label className={"fld" + (wide ? " wide" : "")}><span>{label}</span>{children}</label>;
 }
+
+export const fmtDate = (d) => (d ? new Date(d).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "");
+const TONE = { delivered: "ok", paid: "ok", captured: "ok", refunded: "ok", resolved: "ok", approved: "ok", cancelled: "bad", failed: "bad", rejected: "bad", returned: "warn", high: "bad", open: "warn", requested: "warn", pending: "warn2", created: "warn2", placed: "warn2" };
+export const Status = ({ s }) => <span className={"pill " + (TONE[s] || "")}>{String(s).replace(/_/g, " ")}</span>;
+export const Empty = ({ children }) => <div className="box"><p className="muted" style={{ textAlign: "center", padding: "18px 0" }}>{children}</p></div>;

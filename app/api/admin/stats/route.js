@@ -9,7 +9,13 @@ export const GET = adminRoute(async () => {
     (SELECT count(*)::int FROM categories WHERE is_active) AS categories,
     (SELECT count(*)::int FROM users) AS customers,
     (SELECT count(*)::int FROM inventory_batches WHERE qty_available > 0 AND expiry_date <= current_date) AS expired_batches,
-    (SELECT count(*)::int FROM inventory_batches WHERE qty_available > 0 AND expiry_date > current_date AND expiry_date <= current_date + 60) AS expiring_60`);
+    (SELECT count(*)::int FROM inventory_batches WHERE qty_available > 0 AND expiry_date > current_date AND expiry_date <= current_date + 60) AS expiring_60,
+    (SELECT count(*)::int FROM orders WHERE status = 'placed') AS new_orders,
+    (SELECT count(*)::int FROM orders WHERE status IN ('confirmed','packed')) AS to_ship,
+    (SELECT count(*)::int FROM orders WHERE status IN ('shipped','out_for_delivery')) AS in_transit,
+    (SELECT count(*)::int FROM order_returns WHERE status IN ('requested','approved','picked_up')) AS open_returns,
+    (SELECT count(*)::int FROM support_issues WHERE status <> 'resolved') AS open_issues,
+    (SELECT coalesce(sum(total),0)::float8 FROM orders WHERE created_at::date = current_date AND status NOT IN ('cancelled','returned')) AS today_revenue`);
   const low = await many(`
     SELECT p.id, p.name_en, p.sku, coalesce(sum(b.qty_available) FILTER (WHERE b.expiry_date > current_date), 0)::int AS stock
     FROM products p JOIN inventory_batches b ON b.product_id = p.id WHERE p.is_active

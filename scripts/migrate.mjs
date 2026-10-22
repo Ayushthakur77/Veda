@@ -10,13 +10,15 @@ function sslFor(u) { return /localhost|127\.0\.0\.1/.test(u) ? false : { rejectU
 await client.connect();
 try {
   const { rows } = await client.query("SELECT to_regclass('public.users') AS t");
-  if (rows[0].t) { console.log("Schema already applied (users table exists). Nothing to do."); }
+  if (rows[0].t) { console.log("Base schema already applied."); }
   else {
     await client.query("BEGIN");
     await client.query(readFileSync(new URL("../db/schema.sql", import.meta.url), "utf8"));
     await client.query("COMMIT");
-    console.log("Schema applied.");
+    console.log("Base schema applied.");
   }
+  await client.query(readFileSync(new URL("../db/002_admin.sql", import.meta.url), "utf8"));
+  console.log("Admin tables up to date.");
 } catch (e) {
   await client.query("ROLLBACK").catch(() => {});
   console.error("Migration failed:", e.message); process.exitCode = 1;

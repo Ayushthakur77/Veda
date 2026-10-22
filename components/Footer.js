@@ -1,10 +1,13 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useApp } from "./Providers";
 import { cn } from "../lib/format";
 
 export default function Footer({ categories = [] }) {
   const { t, lang } = useApp();
+  const path = usePathname();
+  if (path?.startsWith("/admin")) return null;
   return (
     <footer className="footer">
       <div className="container">
