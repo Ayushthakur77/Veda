@@ -35,6 +35,7 @@ export default function AccountClient() {
     <div className="container">
       <div className="acc">
         <h1>{t("welcome")}{user.name ? `, ${user.name}` : ""}</h1>
+        <Link href="/orders" className="btn ghost" style={{ textAlign: "center" }}>{t("myOrders")}</Link>
         <form className="box f" onSubmit={save}>
           <h2>{t("account")}</h2>
           <div style={{ color: "var(--muted)", fontSize: 14 }}>{user.phone}</div>

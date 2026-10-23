@@ -6,7 +6,7 @@ import { Thumb } from "./ProductCard";
 import { pn, inr } from "../lib/format";
 
 export default function CartClient() {
-  const { t, lang, cart, setQty, ready } = useApp();
+  const { t, lang, cart, setQty, ready, user, authEnabled } = useApp();
   const [byslug, setBySlug] = useState({});
   const [loading, setLoading] = useState(true);
   const key = Object.keys(cart).sort().join(",");
@@ -23,7 +23,7 @@ export default function CartClient() {
   const items = Object.entries(cart)
     .map(([slug, qty]) => ({ p: byslug[slug], qty }))
     .filter((x) => x.p);
-  const subtotal = items.reduce((s, x) => s + x.p.price * x.qty, 0);
+  const subtotal = items.reduce((s, x) => s + (x.p.dealPrice ?? x.p.price) * x.qty, 0);
 
   if (!ready || loading) return <div className="container empty" />;
   if (items.length === 0)
@@ -45,7 +45,7 @@ export default function CartClient() {
               <div className="th" aria-hidden style={{ overflow: "hidden" }}><Thumb product={p} size={32} /></div>
               <div>
                 <Link href={`/product/${p.slug}`} style={{ fontWeight: 500 }}>{pn(lang, p)}</Link>
-                <div style={{ color: "var(--muted)", fontSize: 13 }}>{p.pack} · {inr(p.price)}</div>
+                <div style={{ color: "var(--muted)", fontSize: 13 }}>{p.pack} · {inr(p.dealPrice ?? p.price)}</div>
                 <button className="link-btn" onClick={() => setQty(p.slug, 0)}>{t("remove")}</button>
               </div>
               <div style={{ textAlign: "right" }}>
@@ -54,7 +54,7 @@ export default function CartClient() {
                   <span>{qty}</span>
                   <button onClick={() => setQty(p.slug, qty + 1)} aria-label="Increase">+</button>
                 </div>
-                <div style={{ marginTop: 6, fontWeight: 600 }}>{inr(p.price * qty)}</div>
+                <div style={{ marginTop: 6, fontWeight: 600 }}>{inr((p.dealPrice ?? p.price) * qty)}</div>
               </div>
             </div>
           ))}
@@ -64,8 +64,9 @@ export default function CartClient() {
           <div className="row"><span>{t("shipping")}</span><span>—</span></div>
           <div className="row t"><span>{t("total")}</span><span>{inr(subtotal)}</span></div>
           <small>{t("shippingNote")}</small>
-          <button className="btn" style={{ width: "100%", marginTop: 16 }} disabled>{t("checkout")}</button>
-          <small>{t("checkoutSoon")}</small>
+          {authEnabled
+            ? <Link href={user ? "/checkout" : "/login?next=/checkout"} className="btn" style={{ width: "100%", marginTop: 16 }}>{t("checkout")}</Link>
+            : <><button className="btn" style={{ width: "100%", marginTop: 16 }} disabled>{t("checkout")}</button><small>{t("checkoutSoon")}</small></>}
         </aside>
       </div>
     </div>

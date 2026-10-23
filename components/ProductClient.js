@@ -13,7 +13,8 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
   const [pin, setPin] = useState("");
   const [msg, setMsg] = useState(null);
   const [tab, setTab] = useState("details");
-  const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+  const eff = product.dealPrice ?? product.price;
+  const off = Math.round(((product.mrp - eff) / product.mrp) * 100);
 
   const checkPin = (e) => {
     e.preventDefault();
@@ -41,7 +42,7 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
           <span className="chip">{t(product.type)}</span>
           <h1>{pn(lang, product)}</h1>
           <div className="price">
-            <b>{inr(product.price)}</b>
+            <b>{inr(eff)}</b>
             <s>{t("mrp")} {inr(product.mrp)}</s>
             {off > 0 && <em>{off}% {t("off")}</em>}
           </div>
@@ -85,7 +86,7 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
       </div>
 
       <div className="buybar">
-        <div><b style={{ fontSize: 18 }}>{inr(product.price)}</b><br /><s style={{ color: "var(--muted)", fontSize: 12 }}>{inr(product.mrp)}</s></div>
+        <div><b style={{ fontSize: 18 }}>{inr(eff)}</b><br /><s style={{ color: "var(--muted)", fontSize: 12 }}>{inr(product.mrp)}</s></div>
         <button className="btn" onClick={addToCart} disabled={!product.inStock}>{!product.inStock ? t("outOfStock") : done ? "✓ " + t("added") : t("add")}</button>
       </div>
 

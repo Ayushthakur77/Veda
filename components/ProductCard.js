@@ -14,7 +14,7 @@ export function Thumb({ product, size }) {
 export default function ProductCard({ product, deal = false }) {
   const { lang, t, add } = useApp();
   const [done, setDone] = useState(false);
-  const price = deal ? dealPrice(product) : product.price;
+  const price = deal ? dealPrice(product) : (product.dealPrice ?? product.price);
   const off = Math.round(((product.mrp - price) / product.mrp) * 100);
   const click = () => {
     add(product.slug);

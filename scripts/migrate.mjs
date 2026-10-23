@@ -17,8 +17,10 @@ try {
     await client.query("COMMIT");
     console.log("Base schema applied.");
   }
-  await client.query(readFileSync(new URL("../db/002_admin.sql", import.meta.url), "utf8"));
-  console.log("Admin tables up to date.");
+  for (const f of ["002_admin.sql", "003_checkout.sql"]) {
+    await client.query(readFileSync(new URL(`../db/${f}`, import.meta.url), "utf8"));
+    console.log(`${f} applied.`);
+  }
 } catch (e) {
   await client.query("ROLLBACK").catch(() => {});
   console.error("Migration failed:", e.message); process.exitCode = 1;

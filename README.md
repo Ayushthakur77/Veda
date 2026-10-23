@@ -50,3 +50,10 @@ Veda talks to Postgres directly from the server, so Supabase works with no code 
 Dashboard · Hub Orders · Track Orders · Returns · Cancellations · Issues · Listings (products) · Categories · Inventory · Payments · Performance · Opportunities · Reports (CSV download).
 Orders move through placed → confirmed → packed → shipped (courier + AWB required) → out for delivery → delivered; cancelling needs a reason.
 "Mark refunded" only updates Veda's records — send the actual refund from the Razorpay dashboard until API refunds are added.
+
+## Checkout & payments
+
+Customers: cart → login → address (Delhi NCR pincodes only) → pay → order page with tracking steps. Prices are re-calculated on the server; stock is reserved FEFO (earliest expiry first) when the order is created and put back if the order is cancelled or left unpaid for 30 minutes.
+Set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` (Razorpay → Settings → API keys) and `RAZORPAY_WEBHOOK_SECRET`.
+In Razorpay → Webhooks add `https://<your-site>/api/webhooks/razorpay` with events `payment.captured` and `payment.failed` and the same secret.
+Run `npm run db:migrate` (or apply `db/003_checkout.sql`) after pulling this version.

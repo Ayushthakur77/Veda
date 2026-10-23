@@ -1,6 +1,7 @@
 import { adminRoute, Invalid, isUuid, optStr, str } from "../../../../../lib/admin";
 import { many, one, tx } from "../../../../../lib/db";
 import { FLOW } from "../../../../../lib/orders";
+import { restock } from "../../../../../lib/checkout";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export const PATCH = adminRoute(async ({ params, body }) => {
       const reason = str(body.cancel_reason, 300);
       if (!reason) throw new Invalid("Please give a cancellation reason.");
       await c.query(`UPDATE orders SET status='cancelled', cancel_reason=$2, cancelled_at=now() WHERE id=$1`, [params.id, reason]);
+      await restock(c, params.id);
     } else {
       await c.query(`UPDATE orders SET status=$2 WHERE id=$1`, [params.id, to]);
     }
