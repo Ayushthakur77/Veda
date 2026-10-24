@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "./Providers";
 import { cn } from "../lib/format";
+import Brand from "./Brand";
 
 export default function Footer({ categories = [] }) {
   const { t, lang } = useApp();
@@ -13,7 +14,7 @@ export default function Footer({ categories = [] }) {
       <div className="container">
         <div className="cols">
           <div>
-            <div className="logo">🌿 Veda.</div>
+            <Brand height={40} />
             <p style={{ marginTop: 10, maxWidth: 360 }}>{t("footerTag")}</p>
             <div className="pay" aria-label="Payments">
               <span>UPI</span><span>Visa</span><span>Mastercard</span><span>RuPay</span><span>Netbanking</span><span>Razorpay</span>

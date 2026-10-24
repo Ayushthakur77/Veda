@@ -3,12 +3,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { useApp } from "./Providers";
 import { pn, inr, dealPrice } from "../lib/format";
+import { Illus, catArt } from "./Icons";
 
 export function Thumb({ product, size }) {
   return product.image
     // eslint-disable-next-line @next/next/no-img-element
     ? <img src={product.image} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-    : <span style={size ? { fontSize: size } : undefined}>{product.emoji}</span>;
+    : <Illus name={catArt(product.category)} size={size || 96} className="thumb-art" />;
 }
 
 export default function ProductCard({ product, deal = false }) {

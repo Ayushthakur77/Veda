@@ -27,7 +27,7 @@ export default function IssuesAdmin() {
         <div className="row wide"><button type="button" className="btn ghost" onClick={() => setForm(null)}>Cancel</button><button className="btn">Save</button></div>
       </form>}
       {err && <p className="bad">{err}</p>}
-      {data && data.rows.length === 0 && <Empty>No issues. 🎉</Empty>}
+      {data && data.rows.length === 0 && <Empty>No open issues.</Empty>}
       {data && data.rows.length > 0 && <table className="tbl"><thead><tr><th>Issue</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody>
         {data.rows.map((i) => <tr key={i.id}>
           <td><b>{i.subject}</b>{i.message && <div className="muted">{i.message}</div>}<div className="muted">{[i.order_no, i.name || i.phone, fmtDate(i.created_at)].filter(Boolean).join(" · ")}</div>{i.admin_note && <div className="muted">Note: {i.admin_note}</div>}</td>

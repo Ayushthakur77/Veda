@@ -22,7 +22,7 @@ export default function BrowseClient({ products = [], categories = [] }) {
           </section>
         ))}
         <div className="filters" style={{ marginTop: 20 }}>
-          {categories.map((c) => <Link key={c.slug} className="pill" href={`/category/${c.slug}`}>{c.emoji} {cn(lang, c)}</Link>)}
+          {categories.map((c) => <Link key={c.slug} className="pill" href={`/category/${c.slug}`}>{cn(lang, c)}</Link>)}
         </div>
       </div>
     </>

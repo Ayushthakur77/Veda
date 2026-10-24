@@ -29,7 +29,6 @@ export default function CategoriesAdmin() {
           <Field label="Name (English) *"><input value={form.name_en} onChange={set("name_en")} required maxLength={120} /></Field>
           <Field label="Name (Hindi)"><input value={form.name_hi || ""} onChange={set("name_hi")} maxLength={120} /></Field>
           <Field label="Slug (auto if empty)"><input value={form.slug} onChange={set("slug")} maxLength={120} /></Field>
-          <Field label="Emoji"><input value={form.emoji || ""} onChange={set("emoji")} maxLength={8} /></Field>
           <Field label="Sort order"><input type="number" value={form.sort_order} onChange={set("sort_order")} /></Field>
           <Field label="Active"><input type="checkbox" checked={form.is_active} onChange={set("is_active")} /></Field>
           <div className="wide row">{msg && <span className="bad">{msg}</span>}<button className="btn">Save</button><button type="button" className="btn ghost" onClick={() => setForm(null)}>Cancel</button></div>
@@ -38,7 +37,7 @@ export default function CategoriesAdmin() {
       {!data ? <p>Loading…</p> : (
         <table className="tbl box"><thead><tr><th>Name</th><th>Slug</th><th>Products</th><th>Status</th><th></th></tr></thead>
           <tbody>{data.categories.map((c) => (
-            <tr key={c.id}><td>{c.emoji} {c.name_en}<div className="muted">{c.name_hi}</div></td><td className="muted">{c.slug}</td><td>{c.product_count}</td>
+            <tr key={c.id}><td>{c.name_en}<div className="muted">{c.name_hi}</div></td><td className="muted">{c.slug}</td><td>{c.product_count}</td>
               <td>{c.is_active ? <span className="pill ok">Active</span> : <span className="pill">Hidden</span>}</td>
               <td className="r"><button className="link-btn" onClick={() => setForm(c)}>Edit</button> · <button className="link-btn" onClick={() => del(c)}>Delete</button></td></tr>))}</tbody></table>
       )}

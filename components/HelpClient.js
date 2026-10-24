@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useApp } from "./Providers";
 import { helpTopics, homeFaq, L } from "../lib/content";
+import { Illus } from "./Icons";
 
 export default function HelpClient() {
   const { t, lang } = useApp();
@@ -11,7 +12,7 @@ export default function HelpClient() {
       <div className="container">
         <section className="section"><div className="topics">
           {helpTopics.map((h, n) => {
-            const inner = <><span className="em">{h.em}</span><b>{L(lang, h.t)}</b><p style={{ color: "var(--muted)", fontSize: 13 }}>{L(lang, h.d)}</p></>;
+            const inner = <><span className="em"><Illus name={h.art} size={44} /></span><b>{L(lang, h.t)}</b><p style={{ color: "var(--muted)", fontSize: 13 }}>{L(lang, h.d)}</p></>;
             return h.href ? <Link key={n} href={h.href} className="topic">{inner}</Link> : <div key={n} className="topic">{inner}</div>;
           })}
         </div></section>

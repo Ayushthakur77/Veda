@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useApp } from "./Providers";
 import { Thumb } from "./ProductCard";
 import { pn, inr } from "../lib/format";
+import { Illus } from "./Icons";
 
 export default function CartClient() {
   const { t, lang, cart, setQty, ready, user, authEnabled } = useApp();
@@ -29,7 +30,7 @@ export default function CartClient() {
   if (items.length === 0)
     return (
       <div className="container empty">
-        <div style={{ fontSize: 56 }}>🛒</div>
+        <Illus name="cart" size={120} />
         <p>{t("empty")}</p>
         <Link href="/" className="btn">{t("continueShopping")}</Link>
       </div>

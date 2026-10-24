@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "./Providers";
 import { inr } from "../lib/format";
+import { Illus } from "./Icons";
 
 const label = (s) => s.replace(/_/g, " ");
 const STEPS = ["placed", "confirmed", "packed", "shipped", "out_for_delivery", "delivered"];
@@ -51,7 +52,7 @@ export function OrderDetail({ no, fresh }) {
   return (
     <div className="container">
       <div className="page" style={{ maxWidth: 720 }}>
-        {fresh && <div className="okbox"><b>✅ {t("orderPlaced")}</b><div>{t("orderThanks")}</div></div>}
+        {fresh && <div className="okbox"><Illus name="check" size={64} /><div><b>{t("orderPlaced")}</b><div>{t("orderThanks")}</div></div></div>}
         <h1>{t("orderNo")} {o.order_no}</h1>
         <p><span className="chip">{label(o.status)}</span> <span className="chip">{t("payment")}: {o.payment_status}</span></p>
         {o.status === "cancelled" ? <p className="bad">{o.cancel_reason}</p> : o.status !== "returned" && (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useApp } from "./Providers";
 import ProductCard from "./ProductCard";
 import { coupons, L } from "../lib/content";
+import { Illus } from "./Icons";
 
 export default function OffersClient({ deals = [] }) {
   const { t, lang } = useApp();
@@ -12,7 +13,7 @@ export default function OffersClient({ deals = [] }) {
       <div className="container">
         <section className="section">
           {coupons.length === 0 ? (
-            <div className="empty" style={{ padding: "30px 0" }}><div style={{ fontSize: 48 }}>🏷️</div><p>{t("offersSoon")}</p></div>
+            <div className="empty" style={{ padding: "30px 0" }}><Illus name="tag" size={110} /><p>{t("offersSoon")}</p></div>
           ) : (
             <div className="coupons">
               {coupons.map((c) => (

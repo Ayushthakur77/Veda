@@ -5,6 +5,7 @@ import { useApp } from "./Providers";
 import ProductCard, { Thumb } from "./ProductCard";
 import { pn, pd, cn, inr } from "../lib/format";
 import { L } from "../lib/content";
+import { Icon } from "./Icons";
 
 export default function ProductClient({ product, category: cat, similar = [] }) {
   const { t, lang, add } = useApp();
@@ -56,7 +57,7 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
             <input inputMode="numeric" maxLength={6} value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} placeholder={t("pincode")} aria-label={t("pincode")} />
             <button className="btn ghost" type="submit">{t("check")}</button>
           </form>
-          <div className="badges"><span>✅ {t("trust")}</span><span>🚚 {t("trust2")}</span><span>↩️ {t("trust3")}</span></div>
+          <div className="badges"><span><Icon name="shield" size={16} />{t("trust")}</span><span><Icon name="truck" size={16} />{t("trust2")}</span><span><Icon name="return" size={16} />{t("trust3")}</span></div>
           <div className={"pin-msg " + (msg ? (msg.ok ? "ok" : "bad") : "")}>{msg?.text}</div>
 
           <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 18 }}>
@@ -65,7 +66,7 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
               <span>{qty}</span>
               <button onClick={() => setQty(Math.min(20, qty + 1))} aria-label="Increase">+</button>
             </div>
-            <button className="btn" onClick={addToCart} disabled={!product.inStock}>{!product.inStock ? t("outOfStock") : done ? "✓ " + t("added") : t("add")}</button>
+            <button className="btn" onClick={addToCart} disabled={!product.inStock}>{!product.inStock ? t("outOfStock") : done ? t("added") : t("add")}</button>
           </div>
         </div>
       </div>
@@ -87,7 +88,7 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
 
       <div className="buybar">
         <div><b style={{ fontSize: 18 }}>{inr(eff)}</b><br /><s style={{ color: "var(--muted)", fontSize: 12 }}>{inr(product.mrp)}</s></div>
-        <button className="btn" onClick={addToCart} disabled={!product.inStock}>{!product.inStock ? t("outOfStock") : done ? "✓ " + t("added") : t("add")}</button>
+        <button className="btn" onClick={addToCart} disabled={!product.inStock}>{!product.inStock ? t("outOfStock") : done ? t("added") : t("add")}</button>
       </div>
 
       {similar.length > 0 && (

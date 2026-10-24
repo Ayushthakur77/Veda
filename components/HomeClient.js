@@ -7,6 +7,7 @@ import ProductCard from "./ProductCard";
 import { banners } from "../lib/data";
 import { articles, homeFaq, L } from "../lib/content";
 import { cn } from "../lib/format";
+import { Icon, Illus, HeroArt, catArt } from "./Icons";
 
 function useCountdown() {
   const [left, setLeft] = useState(null);
@@ -62,7 +63,7 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
           <h1>{t("heroQ")}</h1>
           <form className="search" onSubmit={go} role="search">
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("search")} aria-label={t("search")} />
-            <button type="submit" aria-label="Search">🔍</button>
+            <button type="submit" aria-label="Search"><Icon name="search" size={20} /></button>
           </form>
           <div className="quick">
             {categories.slice(0, 4).map((c) => <Link key={c.slug} href={`/category/${c.slug}`}>{cn(lang, c)}</Link>)}
@@ -72,16 +73,16 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
 
       <div className="container">
         <div className="rx-strip">
-          <span className="ic">📄</span>
+          <span className="ic"><Illus name="rx" size={44} /></span>
           <div><b>{t("rxTitle")}</b><small>{t("rxSub")}</small></div>
           <span className="soon">{t("soon")}</span>
         </div>
 
         <div className="offer-tiles">
-          <Link href="/offers" className="otile"><span className="em">🏷️</span><b>{t("offers")}</b></Link>
-          <Link href="/category/ayurvedic-care" className="otile"><span className="em">🌿</span><b>{t("ayurvedic")}</b></Link>
-          <Link href="/category/homeopathy" className="otile"><span className="em">💧</span><b>{t("homeopathy")}</b></Link>
-          <Link href="/category/devices" className="otile"><span className="em">🩺</span><b>{t("healthcare")}</b></Link>
+          <Link href="/offers" className="otile"><span className="em"><Illus name="tag" size={44} /></span><b>{t("offers")}</b></Link>
+          <Link href="/category/ayurvedic-care" className="otile"><span className="em"><Illus name="ayurvedic-care" size={44} /></span><b>{t("ayurvedic")}</b></Link>
+          <Link href="/category/homeopathy" className="otile"><span className="em"><Illus name="homeopathy" size={44} /></span><b>{t("homeopathy")}</b></Link>
+          <Link href="/category/devices" className="otile"><span className="em"><Illus name="devices" size={44} /></span><b>{t("healthcare")}</b></Link>
         </div>
 
         <section className="hero" aria-live="polite">
@@ -90,7 +91,7 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
             <p>{lang === "hi" ? b.subHi : b.subEn}</p>
             <Link href={b.href} className="btn white">{t("shop")} →</Link>
           </div>
-          <div className="hero-art" aria-hidden>🌿</div>
+          <HeroArt variant={i} className="hero-art" />
           <div className="dots">
             {banners.map((x, n) => (
               <button key={x.id} className={n === i ? "on" : ""} onClick={() => setI(n)} aria-label={`Banner ${n + 1}`} />
@@ -103,7 +104,7 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
           <div className="cats">
             {categories.map((c) => (
               <Link key={c.slug} href={`/category/${c.slug}`} className="cat">
-                <span className="em">{c.emoji}</span>
+                <span className="em"><Illus name={catArt(c.slug)} size={46} /></span>
                 <span className="n">{cn(lang, c)}</span>
               </Link>
             ))}
@@ -118,8 +119,8 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
         <section className="section">
           <div className="sec-head"><h2>{t("whyTitle")}</h2></div>
           <div className="why">
-            {["🌱", "🚚", "🔐", "🔔"].map((ic, n) => (
-              <div key={n}><span className="ic">{ic}</span><b>{t("why" + (n + 1))}</b><span>{t("why" + (n + 1) + "d")}</span></div>
+            {["sprout", "truck", "lock", "bell"].map((ic, n) => (
+              <div key={n}><span className="ic"><Illus name={ic} size={44} /></span><b>{t("why" + (n + 1))}</b><span>{t("why" + (n + 1) + "d")}</span></div>
             ))}
           </div>
         </section>
@@ -129,7 +130,7 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
           <div className="articles">
             {articles.slice(0, 3).map((a) => (
               <Link key={a.slug} href={`/health-articles#${a.slug}`} className="article">
-                <div className="art">{a.em}</div>
+                <div className="art"><Illus name={a.art} size={72} /></div>
                 <div className="tx"><small>{L(lang, a.tag)}</small><h3>{L(lang, a.title)}</h3><p>{L(lang, a.sum)}</p></div>
               </Link>
             ))}
