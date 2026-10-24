@@ -95,7 +95,7 @@ export default function CheckoutClient() {
                 <span><b>{a.full_name}</b> · {a.phone}<br />{[a.line1, a.line2, a.landmark].filter(Boolean).join(", ")}<br />{a.city}, {a.state} {a.pincode}</span>
               </label>
             ))}
-            {!form && <button className="btn ghost" onClick={() => setForm({ ...blank, phone: user.phone.replace("+91", "") })}>+ {t("addAddress")}</button>}
+            {!form && <button className="btn ghost" onClick={() => setForm({ ...blank, phone: user.phone?.replace("+91", "") || "" })}>+ {t("addAddress")}</button>}
             {form && (
               <form className="grid2" onSubmit={saveAddr} style={{ marginTop: 10 }}>
                 {[["full_name", t("fullName")], ["phone", t("mobile")], ["line1", t("addr1")], ["line2", t("addr2")], ["landmark", t("landmark")], ["city", t("city")], ["state", t("state")], ["pincode", t("pincode")]].map(([k, l]) => (

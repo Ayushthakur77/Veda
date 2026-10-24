@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "./Providers";
 
 const safeNext = (n) => (typeof n === "string" && n.startsWith("/") && !n.startsWith("//") ? n : "/account");
 
 export default function LoginClient() {
-  const { t, authEnabled, user, refreshUser } = useApp();
+  const { t, authEnabled, user, refreshUser, googleClientId, lang } = useApp();
   const router = useRouter();
   const next = safeNext(useSearchParams().get("next"));
   const [step, setStep] = useState("phone");
@@ -23,6 +23,34 @@ export default function LoginClient() {
     const id = setTimeout(() => setWait(wait - 1), 1000);
     return () => clearTimeout(id);
   }, [wait]);
+
+  const gbtn = useRef(null);
+  useEffect(() => {
+    if (!googleClientId || step !== "phone") return;
+    let dead = false;
+    const init = () => {
+      if (dead || !window.google?.accounts?.id || !gbtn.current) return;
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: async (resp) => {
+          setErr(""); setBusy(true);
+          const r = await post("/api/auth/google", { credential: resp.credential }).catch(() => ({ ok: false }));
+          if (!r.ok) { setBusy(false); return setErr(r.error || t("googleError")); }
+          await refreshUser(); router.replace(next);
+        },
+      });
+      window.google.accounts.id.renderButton(gbtn.current, { theme: "outline", size: "large", width: 300, text: "continue_with", locale: lang });
+    };
+    if (window.google?.accounts?.id) init();
+    else {
+      let s = document.getElementById("gsi-client");
+      if (!s) { s = document.createElement("script"); s.id = "gsi-client"; s.src = "https://accounts.google.com/gsi/client"; s.async = true; document.body.appendChild(s); }
+      s.addEventListener("load", init);
+      return () => { dead = true; s.removeEventListener("load", init); };
+    }
+    return () => { dead = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [googleClientId, step, lang]);
 
   const post = async (url, body) => {
     const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -63,6 +91,7 @@ export default function LoginClient() {
             </div>
             {err && <p className="bad" role="alert">{err}</p>}
             <button className="btn" disabled={busy || phone.length !== 10}>{t("sendOtp")}</button>
+            {googleClientId && <><div className="or-line"><span>{t("orWord")}</span></div><div ref={gbtn} className="gbtn" /></>}
           </form>
         ) : (
           <form onSubmit={verify}>

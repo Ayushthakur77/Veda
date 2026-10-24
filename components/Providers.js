@@ -16,6 +16,7 @@ export default function Providers({ children }) {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState(null);
   const [authEnabled, setAuthEnabled] = useState(false);
+  const [googleClientId, setGoogleClientId] = useState(null);
 
   useEffect(() => {
     setLang(load("veda_lang", "en"));
@@ -31,7 +32,7 @@ export default function Providers({ children }) {
       const r = await fetch("/api/auth/me", { cache: "no-store" });
       const j = await r.json();
       setUser(j.user ?? null);
-      setAuthEnabled(Boolean(j.enabled));
+      setAuthEnabled(Boolean(j.enabled)); setGoogleClientId(j.googleClientId || null);
     } catch { setUser(null); }
   }, []);
   useEffect(() => { refreshUser(); }, [refreshUser]);
@@ -45,5 +46,5 @@ export default function Providers({ children }) {
   });
   const count = Object.values(cart).reduce((a, b) => a + b, 0);
 
-  return <Ctx.Provider value={{ lang, setLang, t, cart, add, setQty, count, ready, user, authEnabled, refreshUser }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ lang, setLang, t, cart, add, setQty, count, ready, user, authEnabled, googleClientId, refreshUser }}>{children}</Ctx.Provider>;
 }

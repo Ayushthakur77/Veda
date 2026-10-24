@@ -17,7 +17,7 @@ try {
     await client.query("COMMIT");
     console.log("Base schema applied.");
   }
-  for (const f of ["002_admin.sql", "003_checkout.sql"]) {
+  for (const f of ["002_admin.sql", "003_checkout.sql", "004_google.sql"]) {
     await client.query(readFileSync(new URL(`../db/${f}`, import.meta.url), "utf8"));
     console.log(`${f} applied.`);
   }

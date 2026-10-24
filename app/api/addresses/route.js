@@ -11,7 +11,7 @@ export const GET = userRoute(async ({ user }) => ({
 
 export const POST = userRoute(async ({ body, user }) => {
   const a = { full_name: str(body.full_name, 120), line1: str(body.line1, 300), line2: optStr(body.line2, 300), landmark: optStr(body.landmark, 200), city: str(body.city, 80), state: str(body.state, 80) || "Delhi", pincode: str(body.pincode, 6) };
-  const phone = normalizePhone(String(body.phone || user.phone));
+  const phone = normalizePhone(String(body.phone || user.phone || ""));
   if (!a.full_name || !a.line1 || !a.city) throw new Invalid("Name, address and city are required.");
   if (!phone) throw new Invalid("Enter a valid 10-digit mobile number.");
   if (!/^\d{6}$/.test(a.pincode)) throw new Invalid("Enter a valid 6-digit pincode.");

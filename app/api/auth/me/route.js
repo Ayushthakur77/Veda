@@ -11,7 +11,7 @@ const pub = (u) => ({ phone: u.phone, name: u.name, email: u.email, language: u.
 export async function GET() {
   if (!hasDb()) return NextResponse.json({ user: null, enabled: false });
   const u = await getUser();
-  return NextResponse.json({ user: u ? pub(u) : null, enabled: true });
+  return NextResponse.json({ user: u ? pub(u) : null, enabled: true, googleClientId: process.env.GOOGLE_CLIENT_ID || null });
 }
 
 export async function PATCH(req) {
