@@ -72,12 +72,6 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
       </section>
 
       <div className="container">
-        <div className="rx-strip">
-          <span className="ic"><Illus name="rx" size={44} /></span>
-          <div><b>{t("rxTitle")}</b><small>{t("rxSub")}</small></div>
-          <span className="soon">{t("soon")}</span>
-        </div>
-
         <div className="offer-tiles">
           <Link href="/offers" className="otile"><span className="em"><Illus name="tag" size={44} /></span><b>{t("offers")}</b></Link>
           <Link href="/category/ayurvedic-care" className="otile"><span className="em"><Illus name="ayurvedic-care" size={44} /></span><b>{t("ayurvedic")}</b></Link>
