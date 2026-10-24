@@ -57,3 +57,14 @@ Customers: cart → login → address (Delhi NCR pincodes only) → pay → orde
 Set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` (Razorpay → Settings → API keys) and `RAZORPAY_WEBHOOK_SECRET`.
 In Razorpay → Webhooks add `https://<your-site>/api/webhooks/razorpay` with events `payment.captured` and `payment.failed` and the same secret.
 Run `npm run db:migrate` (or apply `db/003_checkout.sql`) after pulling this version.
+
+## Real SMS OTP (MSG91)
+1. Create an MSG91 account and finish DLT registration (entity, sender ID, OTP template containing `##OTP##`).
+2. In Vercel env set `OTP_PROVIDER=msg91`, `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`. Never set `OTP_DEBUG_SHOW` in production.
+3. Redeploy.
+
+## Google login
+1. Google Cloud Console → APIs & Services → OAuth consent screen, then Credentials → OAuth client ID (Web application).
+2. Authorized JavaScript origins: `https://veda-rose-six.vercel.app` (and your custom domain).
+3. In Vercel env set `GOOGLE_CLIENT_ID` (and optionally `ADMIN_EMAILS`, comma separated, to make those Google accounts admin). Redeploy.
+4. Migration `db/004_google.sql` is already applied to the Supabase project.
