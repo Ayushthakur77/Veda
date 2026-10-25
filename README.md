@@ -68,3 +68,9 @@ Run `npm run db:migrate` (or apply `db/003_checkout.sql`) after pulling this ver
 2. Authorized JavaScript origins: `https://veda-rose-six.vercel.app` (and your custom domain).
 3. In Vercel env set `GOOGLE_CLIENT_ID` (and optionally `ADMIN_EMAILS`, comma separated, to make those Google accounts admin). Redeploy.
 4. Migration `db/004_google.sql` is already applied to the Supabase project.
+
+## Marketplace (sellers)
+- `/sell` seller application (needs login) → `/admin/sellers` verification checklist (identity, licence, premises, pharmacist, bank) → approve → seller uses `/seller` (listings, batches, orders to pack with invoice no., earnings).
+- New seller listings start inactive; admin activates them in Listings. Suspending a seller switches off all their listings.
+- Admin can mark an order "packed" only after each seller has packed their items. Earnings count on delivered orders; admin records payouts per seller.
+- `/admin/launch` = launch checklist with email drafts. Set `COMPANY_NAME`, `GRIEVANCE_OFFICER`, `SUPPORT_EMAIL`, `SUPPORT_PHONE`, `COMPANY_ADDRESS` env for the Grievance page.

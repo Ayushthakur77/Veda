@@ -43,6 +43,8 @@ export default function Footer({ categories = [] }) {
               <li><Link href="/return-policy">{t("returns")}</Link></li>
               <li><Link href="/privacy">{t("privacy")}</Link></li>
               <li><Link href="/terms">{t("terms")}</Link></li>
+              <li><Link href="/grievance">Grievance / Complaints</Link></li>
+              <li><Link href="/sell">Sell on Veda</Link></li>
             </ul>
           </div>
         </div>

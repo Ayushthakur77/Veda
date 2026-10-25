@@ -27,6 +27,10 @@ export const PATCH = adminRoute(async ({ params, body }) => {
     const o = rows[0];
     if (!o) throw new Invalid("Order not found.");
     if (!(FLOW[o.status] || []).includes(to)) throw new Invalid(`Cannot move an order from ${o.status} to ${to}.`);
+    if (to === "packed") {
+      const pend = await c.query(`SELECT 1 FROM order_items WHERE order_id=$1 AND seller_id IS NOT NULL AND seller_status='pending' LIMIT 1`, [params.id]);
+      if (pend.rows[0]) throw new Invalid("Seller(s) have not packed their items yet.");
+    }
     if (to === "shipped") {
       const courier = str(body.courier_name, 60), awb = str(body.awb_code, 60);
       if (!courier || !awb) throw new Invalid("Courier name and AWB / tracking number are required to mark shipped.");

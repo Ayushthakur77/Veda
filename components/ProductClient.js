@@ -51,6 +51,7 @@ export default function ProductClient({ product, category: cat, similar = [] }) 
           <dl className="meta">
             <dt>{t("pack")}</dt><dd>{product.pack}</dd>
             <dt>{t("type")}</dt><dd>{t(product.type)}</dd>
+            <dt>{lang === "hi" ? "विक्रेता" : "Sold by"}</dt><dd>{product.seller ? `${product.seller}${product.sellerCity ? ", " + product.sellerCity : ""}` : "Veda"}{product.sellerLicence ? ` · Drug Licence ${product.sellerLicence}` : ""}</dd>
           </dl>
 
           <form className="pin" onSubmit={checkPin}>
