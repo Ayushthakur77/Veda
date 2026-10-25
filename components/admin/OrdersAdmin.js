@@ -61,6 +61,12 @@ function OrderDrawer({ id, onClose, onChanged }) {
     setMsg("");
     try { await api(`/api/admin/orders/${id}`, "PATCH", { status: to, ...form }); setForm({}); await reload(); onChanged(); } catch (e) { setMsg(e.message); }
   };
+  const [busy, setBusy] = useState(false);
+  const autoShip = async () => {
+    setMsg(""); setBusy(true);
+    try { await api(`/api/admin/orders/${id}/ship`, "POST", {}); await reload(); onChanged(); } catch (e) { setMsg(e.message); }
+    setBusy(false);
+  };
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const o = data?.order;
   return (
@@ -93,6 +99,7 @@ function OrderDrawer({ id, onClose, onChanged }) {
               <Field label="Note (optional)"><input value={form.note || ""} onChange={set("note")} /></Field>
               {msg && <p className="bad">{msg}</p>}
               <div className="row" style={{ justifyContent: "flex-start", marginTop: 10, flexWrap: "wrap" }}>
+                {data.next.includes("shipped") && <button className="btn" disabled={busy} onClick={autoShip}>Ship via Shiprocket (auto AWB)</button>}
                 {data.next.map((n) => <button key={n} className={"btn" + (n === "cancelled" ? " danger" : "")} onClick={() => move(n)}>{n === "cancelled" ? "Cancel order" : "Mark " + n.replace(/_/g, " ")}</button>)}
               </div>
             </div>
