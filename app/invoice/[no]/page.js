@@ -12,7 +12,7 @@ const dt = (d) => new Date(d).toLocaleDateString("en-IN", { day: "2-digit", mont
 export default async function Page({ params, searchParams }) {
   const r = await loadInvoices(params.no, searchParams?.s || null);
   if (r.error === "login") redirect(`/login?next=/invoice/${params.no}`);
-  if (r.error) return <div className="container"><div className="page"><h1>Invoice</h1><p>{r.error === "unpaid" ? "Invoice is available after payment is completed." : "Invoice not found."}</p><Link href="/orders" className="link-btn">My orders</Link></div></div>;
+  if (r.error) return <div className="container"><div className="page"><h1>Invoice</h1><p>{r.error === "cancelled" ? "This order was cancelled, so no invoice is available." : "Invoice not found."}</p><Link href="/orders" className="link-btn">My orders</Link></div></div>;
   const { order, invoices, company } = r;
   return (
     <div className="container inv-wrap">
@@ -21,7 +21,7 @@ export default async function Page({ params, searchParams }) {
       {invoices.map((v) => (
         <section className="inv" key={v.key}>
           <header className="inv-h">
-            <div><h1>TAX INVOICE</h1><small>{v.intra ? "Intra-state supply (CGST + SGST)" : "Inter-state supply (IGST)"}</small></div>
+            <div><h1>{order.paid ? "TAX INVOICE" : "PROFORMA INVOICE"}</h1><small>{order.paid ? "" : "Payment pending — final tax invoice is issued after payment. "}{v.intra ? "Intra-state supply (CGST + SGST)" : "Inter-state supply (IGST)"}</small></div>
             <table className="inv-meta"><tbody>
               <tr><td>Invoice no.</td><td><b>{v.no}</b></td></tr>
               <tr><td>Invoice date</td><td>{dt(v.date)}</td></tr>
@@ -58,7 +58,7 @@ export default async function Page({ params, searchParams }) {
             <p><b>Amount in words:</b> {v.words}</p>
             {v.deliveryNote && <p className="muted">{v.deliveryNote}</p>}
           </div>
-          <div className="inv-pay"><b>Payment:</b> {order.pay ? `${(order.pay.method || "Online").toUpperCase()} · Paid${order.pay.ref ? ` · Txn ref ${order.pay.ref}` : ""}` : "Paid online"}</div>
+          <div className="inv-pay"><b>Payment:</b> {!order.paid ? "Pending" : order.pay ? `${(order.pay.method || "Online").toUpperCase()} · Paid${order.pay.ref ? ` · Txn ref ${order.pay.ref}` : ""}` : "Paid online"}</div>
           <footer className="inv-f">
             <p>Prices include GST. MRP is the maximum retail price printed on the pack. Goods once sold are returnable only as per the Refund &amp; Return Policy.</p>
             <p>Declaration: the products are for personal / self use as per label directions. {company.name} operates as a technology platform connecting customers with the seller named above; the seller is the seller of record and responsible for the goods and this invoice. For complaints visit /grievance.</p>

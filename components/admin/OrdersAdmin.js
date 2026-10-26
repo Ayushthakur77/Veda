@@ -84,7 +84,7 @@ function OrderDrawer({ id, onClose, onChanged }) {
             <tr><td className="muted">Discount / Shipping / GST</td><td className="r muted">−{inrA(o.discount)} / {inrA(o.shipping_fee)} / {inrA(o.gst_amount)}</td></tr>
             <tr><td><b>Total</b></td><td className="r"><b>{inrA(o.total_n)}</b></td></tr>
           </tbody></table>
-          {o.payment_status === "paid" && <p><a className="link-btn" href={`/invoice/${o.order_no}`} target="_blank" rel="noreferrer">View tax invoice</a></p>}
+          {o.payment_status === "paid" ? <p><a className="link-btn" href={`/invoice/${o.order_no}`} target="_blank" rel="noreferrer">View / download tax invoice</a></p> : <p className="muted">Tax invoice is available once payment is completed (payment: {o.payment_status}).</p>}
           {data.shipment && <p className="muted">Shipment: {data.shipment.courier_name} · {data.shipment.awb_code}</p>}
           <h3 style={{ fontSize: 15, margin: "14px 0 6px" }}>History</h3>
           {data.history.map((h, n) => <div key={n} className="muted">{fmtDate(h.created_at)} — <b>{h.status.replace(/_/g, " ")}</b>{h.note ? ` · ${h.note}` : ""}</div>)}
