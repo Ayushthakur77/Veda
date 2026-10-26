@@ -45,6 +45,13 @@ export const PATCH = adminRoute(async ({ params, body }) => {
     } else {
       await c.query(`UPDATE orders SET status=$2 WHERE id=$1`, [params.id, to]);
     }
+    if (to === "delivered") {
+      const { rows: [co] } = await c.query(`SELECT payment_method, payment_status, total FROM orders WHERE id=$1`, [params.id]);
+      if (co.payment_method === "cod" && co.payment_status !== "paid") {
+        await c.query(`UPDATE orders SET payment_status='paid' WHERE id=$1`, [params.id]);
+        await c.query(`INSERT INTO payments (order_id, method, amount, status) VALUES ($1,'cod',$2,'captured')`, [params.id, co.total]);
+      }
+    }
     if (["out_for_delivery", "delivered"].includes(to)) await c.query(`UPDATE shipments SET status=$2 WHERE order_id=$1`, [params.id, to]);
     await c.query(`INSERT INTO order_status_history (order_id, status, note) VALUES ($1,$2,$3)`, [params.id, to, note]);
     return { ok: true, status: to };

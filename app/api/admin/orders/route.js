@@ -16,7 +16,7 @@ export const GET = adminRoute(async ({ req }) => {
   const W = where.length ? "WHERE " + where.join(" AND ") : "";
   const total = (await one(`SELECT count(*)::int AS n FROM orders o JOIN users u ON u.id=o.user_id ${W}`, args)).n;
   const rows = await many(`
-    SELECT o.id, o.order_no, o.status, o.payment_status, o.total::float8 AS total, o.created_at, o.cancel_reason,
+    SELECT o.id, o.order_no, o.status, o.payment_status, o.payment_method, o.total::float8 AS total, o.created_at, o.cancel_reason,
            u.phone, u.name, o.address_snapshot->>'city' AS city, o.address_snapshot->>'pincode' AS pincode,
            (SELECT count(*)::int FROM order_items i WHERE i.order_id=o.id) AS items,
            s.courier_name, s.awb_code, s.tracking_url

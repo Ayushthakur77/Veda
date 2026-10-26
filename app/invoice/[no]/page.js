@@ -21,7 +21,7 @@ export default async function Page({ params, searchParams }) {
       {invoices.map((v) => (
         <section className="inv" key={v.key}>
           <header className="inv-h">
-            <div><h1>{order.paid ? "TAX INVOICE" : "PROFORMA INVOICE"}</h1><small>{order.paid ? "" : "Payment pending — final tax invoice is issued after payment. "}{v.intra ? "Intra-state supply (CGST + SGST)" : "Inter-state supply (IGST)"}</small></div>
+            <div><h1>{order.paid || order.cod ? "TAX INVOICE" : "PROFORMA INVOICE"}</h1><small>{order.paid || order.cod ? "" : "Payment pending — final tax invoice is issued after payment. "}{v.intra ? "Intra-state supply (CGST + SGST)" : "Inter-state supply (IGST)"}</small></div>
             <table className="inv-meta"><tbody>
               <tr><td>Invoice no.</td><td><b>{v.no}</b></td></tr>
               <tr><td>Invoice date</td><td>{dt(v.date)}</td></tr>
@@ -58,7 +58,7 @@ export default async function Page({ params, searchParams }) {
             <p><b>Amount in words:</b> {v.words}</p>
             {v.deliveryNote && <p className="muted">{v.deliveryNote}</p>}
           </div>
-          <div className="inv-pay"><b>Payment:</b> {!order.paid ? "Pending" : order.pay ? `${(order.pay.method || "Online").toUpperCase()} · Paid${order.pay.ref ? ` · Txn ref ${order.pay.ref}` : ""}` : "Paid online"}</div>
+          <div className="inv-pay"><b>Payment:</b> {order.cod ? (order.paid ? "Cash on Delivery · Paid on delivery" : `Cash on Delivery — ${inr(order.total)} payable to the delivery partner on delivery`) : !order.paid ? "Pending" : order.pay ? `${(order.pay.method || "Online").toUpperCase()} · Paid${order.pay.ref ? ` · Txn ref ${order.pay.ref}` : ""}` : "Paid online"}</div>
           <footer className="inv-f">
             <p>Prices include GST. MRP is the maximum retail price printed on the pack. Goods once sold are returnable only as per the Refund &amp; Return Policy.</p>
             <p>Declaration: the products are for personal / self use as per label directions. {company.name} operates as a technology platform connecting customers with the seller named above; the seller is the seller of record and responsible for the goods and this invoice. For complaints visit /grievance.</p>

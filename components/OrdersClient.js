@@ -54,7 +54,7 @@ export function OrderDetail({ no, fresh }) {
       <div className="page" style={{ maxWidth: 720 }}>
         {fresh && <div className="okbox"><Illus name="check" size={64} /><div><b>{t("orderPlaced")}</b><div>{t("orderThanks")}</div></div></div>}
         <h1>{t("orderNo")} {o.order_no}</h1>
-        <p><span className="chip">{label(o.status)}</span> <span className="chip">{t("payment")}: {o.payment_status}</span>{o.status !== "cancelled" && <> <Link href={`/invoice/${o.order_no}`} className="chip" style={{ textDecoration: "underline" }}>{t("invoice") || "Download invoice"}</Link></>}</p>
+        <p><span className="chip">{label(o.status)}</span> <span className="chip">{t("payment")}: {o.payment_method === "cod" ? (o.payment_status === "paid" ? "Cash on Delivery · paid" : "Cash on Delivery · pay ₹" + o.total + " on delivery") : o.payment_status}</span>{o.status !== "cancelled" && <> <Link href={`/invoice/${o.order_no}`} className="chip" style={{ textDecoration: "underline" }}>{t("invoice") || "Download invoice"}</Link></>}</p>
         {o.status === "cancelled" ? <p className="bad">{o.cancel_reason}</p> : o.status !== "returned" && (
           <ol className="steps">{STEPS.map((s, i) => <li key={s} className={i <= idx ? "on" : ""}>{label(s)}</li>)}</ol>
         )}

@@ -8,9 +8,9 @@ export const dynamic = "force-dynamic";
 export const POST = sellerRoute(async ({ params, body, seller }) => {
   if (!isUuid(params.id)) throw new Invalid("Bad order id.");
   return tx(async (c) => {
-    const { rows: [o] } = await c.query(`SELECT id, order_no, status, payment_status FROM orders WHERE id=$1 FOR UPDATE`, [params.id]);
+    const { rows: [o] } = await c.query(`SELECT id, order_no, status, payment_status, payment_method FROM orders WHERE id=$1 FOR UPDATE`, [params.id]);
     if (!o) throw new Invalid("Order not found.");
-    if (o.payment_status !== "paid" || !["placed", "confirmed"].includes(o.status)) throw new Invalid("This order can no longer be packed.");
+    if ((o.payment_status !== "paid" && o.payment_method !== "cod") || !["placed", "confirmed"].includes(o.status)) throw new Invalid("This order can no longer be packed.");
     const { rowCount } = await c.query(`UPDATE order_items SET seller_status='packed' WHERE order_id=$1 AND seller_id=$2 AND seller_status='pending'`, [params.id, seller.id]);
     if (!rowCount) throw new Invalid("Nothing to pack for you in this order.");
     const inv = str(body.invoice_no, 40) || `INV-${o.order_no}`;

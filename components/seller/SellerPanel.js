@@ -116,7 +116,7 @@ export function SellerOrders() {
       {err && <p className="bad">{err}</p>}
       {!data ? <p>Loading…</p> : data.orders.length === 0 ? <Empty>No orders yet.</Empty> : data.orders.map((o) => (
         <div className="box" key={o.id}>
-          <div className="row" style={{ justifyContent: "space-between" }}><b>{o.order_no}</b><span><Status s={o.packed ? "approved" : "pending"} /> <span className="muted">{o.packed ? "packed" : "to pack"} · {o.status.replace(/_/g, " ")}</span></span></div>
+          <div className="row" style={{ justifyContent: "space-between" }}><b>{o.order_no}</b><span><Status s={o.packed ? "approved" : "pending"} /> <span className="muted">{o.packed ? "packed" : "to pack"} · {o.status.replace(/_/g, " ")}{o.payment_method === "cod" && o.payment_status !== "paid" ? " · COD" : ""}</span></span></div>
           <div className="muted">{fmtDate(o.created_at)} · {o.city}</div>
           <table className="tbl"><tbody>{o.items.map((i, n) => <tr key={n}><td>{i.name}<div className="muted">Batch {i.batch || "—"}{i.expiry ? ` · exp ${i.expiry}` : ""}</div></td><td className="r">{i.qty} × {inrA(i.price)}</td></tr>)}
             <tr><td><b>Your items total</b></td><td className="r"><b>{inrA(o.my_total)}</b></td></tr></tbody></table>

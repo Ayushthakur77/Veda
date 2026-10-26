@@ -37,7 +37,7 @@ export default function OrdersAdmin({ mode = "hub" }) {
               <td><Status s={o.status} />{o.cancel_reason && <div className="muted">{o.cancel_reason}</div>}</td>
               {mode === "track"
                 ? <td>{o.courier_name || "—"}<div className="muted">{o.tracking_url ? <a href={o.tracking_url} target="_blank" rel="noreferrer noopener" className="link-btn">{o.awb_code}</a> : o.awb_code}</div></td>
-                : <td><Status s={o.payment_status} /></td>}
+                : <td><Status s={o.payment_method === "cod" && o.payment_status !== "paid" ? "COD" : o.payment_status} /></td>}
               <td className="r">{inrA(o.total)}</td>
             </tr>))}</tbody></table>
       )}
@@ -76,7 +76,7 @@ function OrderDrawer({ id, onClose, onChanged }) {
         {err && <p className="bad">{err}</p>}
         {!data && !err && <p>Loading…</p>}
         {o && <>
-          <p><Status s={o.status} /> <Status s={o.payment_status} /> <span className="muted">{fmtDate(o.created_at)}</span></p>
+          <p><Status s={o.status} /> <Status s={o.payment_method === "cod" && o.payment_status !== "paid" ? "COD" : o.payment_status} /> <span className="muted">{fmtDate(o.created_at)}</span></p>
           <p><b>{o.name || "Customer"}</b> · {o.phone}</p>
           <p className="muted">{[o.address_snapshot?.full_name, o.address_snapshot?.line1, o.address_snapshot?.line2, o.address_snapshot?.landmark, o.address_snapshot?.city, o.address_snapshot?.pincode].filter(Boolean).join(", ")}</p>
           <table className="tbl"><tbody>
@@ -84,7 +84,7 @@ function OrderDrawer({ id, onClose, onChanged }) {
             <tr><td className="muted">Discount / Shipping / GST</td><td className="r muted">−{inrA(o.discount)} / {inrA(o.shipping_fee)} / {inrA(o.gst_amount)}</td></tr>
             <tr><td><b>Total</b></td><td className="r"><b>{inrA(o.total_n)}</b></td></tr>
           </tbody></table>
-          {o.payment_status === "paid" ? <p><a className="link-btn" href={`/invoice/${o.order_no}`} target="_blank" rel="noreferrer">View / download tax invoice</a></p> : <p className="muted">Tax invoice is available once payment is completed (payment: {o.payment_status}).</p>}
+          {o.status !== "cancelled" && <p><a className="btn ghost" href={`/invoice/${o.order_no}`} target="_blank" rel="noreferrer">Download / print invoice</a></p>}
           {data.shipment && <p className="muted">Shipment: {data.shipment.courier_name} · {data.shipment.awb_code}</p>}
           <h3 style={{ fontSize: 15, margin: "14px 0 6px" }}>History</h3>
           {data.history.map((h, n) => <div key={n} className="muted">{fmtDate(h.created_at)} — <b>{h.status.replace(/_/g, " ")}</b>{h.note ? ` · ${h.note}` : ""}</div>)}

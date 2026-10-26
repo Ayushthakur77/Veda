@@ -1,10 +1,15 @@
 import { userRoute, Invalid } from "../../../../lib/shop";
 import { createOrder, abandonOrder } from "../../../../lib/checkout";
-import { createGatewayOrder, payMode } from "../../../../lib/pay";
+import { createGatewayOrder, payMode, codConfig } from "../../../../lib/pay";
 import { query } from "../../../../lib/db";
 export const dynamic = "force-dynamic";
 
 export const POST = userRoute(async ({ body, user }) => {
+  if (body.payment_method === "cod") {
+    if (!codConfig().enabled) throw new Invalid("Cash on Delivery is not available right now.");
+    const o = await createOrder(user, body.items, String(body.address_id || ""), "cod");
+    return { order_no: o.order_no, cod: true, amount: o.total };
+  }
   const mode = payMode();
   if (mode === "off") throw Object.assign(new Invalid("Online payments are not available yet."), { status: 503 });
   const order = await createOrder(user, body.items, String(body.address_id || ""));
