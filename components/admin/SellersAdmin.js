@@ -61,9 +61,16 @@ function Seller({ s, reload }) {
 
 export default function SellersAdmin() {
   const { data, err, reload } = useLoad("/api/admin/sellers");
+  const [demoErr, setDemoErr] = useState("");
+  const openDemo = async () => {
+    setDemoErr("");
+    try { await api("/api/admin/demo-seller", "POST", {}); window.location.href = "/seller"; } catch (x) { setDemoErr(x.message); }
+  };
   return (
     <div>
-      <div className="bar"><h1>Sellers</h1></div>
+      <div className="bar"><h1>Sellers</h1><button className="btn" onClick={openDemo}>Open demo seller panel</button></div>
+      {demoErr && <p className="bad">{demoErr}</p>}
+      <p className="muted">Demo panel: your admin account gets a test seller profile (“Demo Seller (test)”) so you can try /seller without applying. Suspend it here when done.</p>
       <p className="muted">Verify each seller’s documents with the issuing authority before ticking the checks. A seller can be approved only when all required checks are ticked. Suspending switches off every listing of that seller.</p>
       {err && <p className="bad">{err}</p>}
       {!data ? <p>Loading…</p> : data.sellers.length === 0 ? <Empty>No seller applications yet. Sellers apply at /sell.</Empty> : data.sellers.map((s) => <Seller key={s.id} s={s} reload={reload} />)}
