@@ -120,7 +120,7 @@ export function SellerOrders() {
           <div className="muted">{fmtDate(o.created_at)} · {o.city}</div>
           <table className="tbl"><tbody>{o.items.map((i, n) => <tr key={n}><td>{i.name}<div className="muted">Batch {i.batch || "—"}{i.expiry ? ` · exp ${i.expiry}` : ""}</div></td><td className="r">{i.qty} × {inrA(i.price)}</td></tr>)}
             <tr><td><b>Your items total</b></td><td className="r"><b>{inrA(o.my_total)}</b></td></tr></tbody></table>
-          {o.packed ? <p className="muted">Invoice no. {o.invoice_no}</p> : (
+          {o.packed ? <p className="muted">Invoice no. {o.invoice_no} · <a className="link-btn" href={`/invoice/${o.order_no}`} target="_blank" rel="noreferrer">View / print invoice</a></p> : (
             <div className="row" style={{ justifyContent: "flex-start", gap: 10, flexWrap: "wrap" }}>
               <input placeholder={`Invoice no. (auto: INV-${o.order_no})`} value={inv[o.id] || ""} onChange={(e) => setInv({ ...inv, [o.id]: e.target.value })} maxLength={40} style={{ flex: "1 1 220px" }} />
               <button className="btn" onClick={() => pack(o)}>Mark packed</button>
