@@ -7,7 +7,7 @@ import ProductCard from "./ProductCard";
 import { banners } from "../lib/data";
 import { articles, homeFaq, L } from "../lib/content";
 import { cn } from "../lib/format";
-import { Icon, Illus, HeroArt, catArt } from "./Icons";
+import { Icon, Illus, HeroArt, catArt, tintOf } from "./Icons";
 
 function useCountdown() {
   const [left, setLeft] = useState(null);
@@ -73,10 +73,10 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
 
       <div className="container">
         <div className="offer-tiles">
-          <Link href="/offers" className="otile"><span className="em"><Illus name="tag" size={44} /></span><b>{t("offers")}</b></Link>
-          <Link href="/category/ayurvedic-care" className="otile"><span className="em"><Illus name="ayurvedic-care" size={44} /></span><b>{t("ayurvedic")}</b></Link>
-          <Link href="/category/homeopathy" className="otile"><span className="em"><Illus name="homeopathy" size={44} /></span><b>{t("homeopathy")}</b></Link>
-          <Link href="/category/devices" className="otile"><span className="em"><Illus name="devices" size={44} /></span><b>{t("healthcare")}</b></Link>
+          <Link href="/offers" className="otile" style={{ background: tintOf("tag") }}><span className="em"><Illus color name="tag" size={44} /></span><b>{t("offers")}</b></Link>
+          <Link href="/category/ayurvedic-care" className="otile" style={{ background: tintOf("ayurvedic-care") }}><span className="em"><Illus color name="ayurvedic-care" size={44} /></span><b>{t("ayurvedic")}</b></Link>
+          <Link href="/category/homeopathy" className="otile" style={{ background: tintOf("homeopathy") }}><span className="em"><Illus color name="homeopathy" size={44} /></span><b>{t("homeopathy")}</b></Link>
+          <Link href="/category/devices" className="otile" style={{ background: tintOf("devices") }}><span className="em"><Illus color name="devices" size={44} /></span><b>{t("healthcare")}</b></Link>
         </div>
 
         <section className="hero" aria-live="polite">
@@ -98,7 +98,7 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
           <div className="cats">
             {categories.map((c) => (
               <Link key={c.slug} href={`/category/${c.slug}`} className="cat">
-                <span className="em"><Illus name={catArt(c.slug)} size={46} /></span>
+                <span className="em" style={{ background: tintOf(catArt(c.slug)) }}><Illus color name={catArt(c.slug)} size={46} /></span>
                 <span className="n">{cn(lang, c)}</span>
               </Link>
             ))}
@@ -114,7 +114,7 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
           <div className="sec-head"><h2>{t("whyTitle")}</h2></div>
           <div className="why">
             {["sprout", "truck", "lock", "bell"].map((ic, n) => (
-              <div key={n}><span className="ic"><Illus name={ic} size={44} /></span><b>{t("why" + (n + 1))}</b><span>{t("why" + (n + 1) + "d")}</span></div>
+              <div key={n}><span className="ic"><Illus color name={ic} size={44} /></span><b>{t("why" + (n + 1))}</b><span>{t("why" + (n + 1) + "d")}</span></div>
             ))}
           </div>
         </section>
@@ -124,7 +124,7 @@ export default function HomeClient({ categories = [], deals = [], popular = [], 
           <div className="articles">
             {articles.slice(0, 3).map((a) => (
               <Link key={a.slug} href={`/health-articles#${a.slug}`} className="article">
-                <div className="art"><Illus name={a.art} size={72} /></div>
+                <div className="art"><Illus color name={a.art} size={72} /></div>
                 <div className="tx"><small>{L(lang, a.tag)}</small><h3>{L(lang, a.title)}</h3><p>{L(lang, a.sum)}</p></div>
               </Link>
             ))}

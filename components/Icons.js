@@ -42,14 +42,18 @@ export function Icon({ name, size = 22, className, strokeWidth = 1.8, ...rest })
   );
 }
 
-const Leaf = ({ x = 0, y = 0, s = 1, r = 0, c = G.l, vein = "#fff" }) => (
+const LeafBase = ({ x = 0, y = 0, s = 1, r = 0, c, vein = "#fff" }) => (
   <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
     <path d="M0 0C-14-8-14-26 0-40 14-26 14-8 0 0z" fill={c} />
     <path d="M0 -4V-34" stroke={vein} strokeWidth="2" strokeLinecap="round" opacity=".7" />
   </g>
 );
 
-const ART = {
+const Leaf = (p) => <LeafBase c={G.l} {...p} />;
+
+const makeArt = (G) => {
+  const Leaf = (p) => <LeafBase c={G.l} {...p} />;
+  return {
   leaf: <><Leaf x={48} y={82} s={1.7} r={-15} /><path d="M48 82v-6" stroke={G.d} strokeWidth="3" strokeLinecap="round" /></>,
   "ayurvedic-care": <>
     <rect x="26" y="82" width="44" height="4" rx="2" fill={G.p} />
@@ -180,12 +184,35 @@ const ART = {
   pin: <>
     <path d="M48 88S18 60 18 38a30 30 0 0 1 60 0c0 22-30 50-30 50z" fill={G.l} /><circle cx="48" cy="38" r="11" fill="#fff" />
   </>,
+  };
 };
 
-export function Illus({ name = "leaf", size = 64, className, title }) {
+
+// Colour families. Default (no tone) stays the original green so product placeholders do not change.
+const PALS = {
+  green: G,
+  blue: { d: "#173f7a", m: "#2563c9", l: "#4a8bf0", s: "#93bbf7", p: "#c9defc", w: "#eaf2fe" },
+  orange: { d: "#9a3d07", m: "#e0620f", l: "#f58a3a", s: "#fbb883", p: "#fddcc0", w: "#fff1e6" },
+  amber: { d: "#8a5a00", m: "#d99a06", l: "#f2b91f", s: "#f8d56b", p: "#fbe9a8", w: "#fff8e1" },
+  rose: { d: "#9d1f55", m: "#d93a7e", l: "#ee6ba2", s: "#f6a6c6", p: "#fbd2e2", w: "#fff0f6" },
+  red: { d: "#8f1b22", m: "#cf2c36", l: "#ea5560", s: "#f4959b", p: "#f9ccce", w: "#fff0f0" },
+  teal: { d: "#0b5a5f", m: "#0f8a8f", l: "#2cb5b5", s: "#82d3d1", p: "#c0ecea", w: "#e8f8f7" },
+  purple: { d: "#4a2a8a", m: "#7048cc", l: "#9370e6", s: "#bda8f2", p: "#ddd2fa", w: "#f2eefe" },
+};
+const TONE_OF = {
+  leaf: "green", "ayurvedic-care": "green", homeopathy: "blue", immunity: "orange", digestion: "amber", "skin-hair": "rose", "herbal-juices": "red", devices: "teal", "mother-baby": "purple",
+  sun: "orange", rx: "blue", cart: "green", tag: "rose", check: "green", truck: "blue", sprout: "green", lock: "purple", bell: "amber", help: "teal", box: "orange", mail: "blue", news: "teal", return: "purple", card: "blue", user: "teal", pin: "red",
+};
+const ARTS = {};
+const artSet = (tone) => (ARTS[tone] ||= makeArt(PALS[tone] || G));
+const ART = artSet("green");
+export const tintOf = (name) => (PALS[TONE_OF[name] || "green"] || G).w;
+
+export function Illus({ name = "leaf", size = 64, className, title, color = false }) {
+  const art = color ? artSet(TONE_OF[name] || "green") : ART;
   return (
     <svg width={size} height={size} viewBox="0 0 96 96" className={className} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : "true"} focusable="false">
-      {ART[name] || ART.leaf}
+      {art[name] || art.leaf}
     </svg>
   );
 }
@@ -197,7 +224,7 @@ export function HeroArt({ variant = 0, className }) {
     <svg viewBox="0 0 320 260" className={className} aria-hidden="true" focusable="false">
       <circle cx="170" cy="130" r="112" fill="#fff" opacity=".16" />
       <circle cx="170" cy="130" r="84" fill="#fff" opacity=".95" />
-      <g transform="translate(110 70) scale(1.25)">{ART[main]}</g>
+      <g transform="translate(110 70) scale(1.25)">{artSet(TONE_OF[main])[main]}</g>
       <g opacity=".95"><Leaf x={52} y={170} s={1.6} r={-35} c="#bfe3cc" vein="#1f7a45" /><Leaf x={288} y={86} s={1.3} r={40} c="#e9f6ee" vein="#3aa56a" /><Leaf x={282} y={232} s={1.9} r={25} c="#7cc79a" vein="#e9f6ee" /><Leaf x={40} y={60} s={0.9} r={-10} c="#e9f6ee" vein="#3aa56a" /></g>
     </svg>
   );

@@ -30,7 +30,7 @@ export default function CartClient() {
   if (items.length === 0)
     return (
       <div className="container empty">
-        <Illus name="cart" size={120} />
+        <Illus color name="cart" size={120} />
         <p>{t("empty")}</p>
         <Link href="/" className="btn">{t("continueShopping")}</Link>
       </div>

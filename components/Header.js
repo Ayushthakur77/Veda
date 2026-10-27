@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useApp } from "./Providers";
 import { cn } from "../lib/format";
-import { Icon, Illus, catArt } from "./Icons";
+import { Icon, Illus, catArt, tintOf } from "./Icons";
 import Brand from "./Brand";
 
 export default function Header({ categories = [] }) {
@@ -74,7 +74,7 @@ export default function Header({ categories = [] }) {
               <button type="submit" aria-label="Search"><Icon name="search" size={20} /></button>
             </form>
             <h4>{t("shopByCategory")}</h4>
-            {categories.map((c) => <Link key={c.slug} href={`/category/${c.slug}`} onClick={close}><span className="dic"><Illus name={catArt(c.slug)} size={26} /></span>{cn(lang, c)}</Link>)}
+            {categories.map((c) => <Link key={c.slug} href={`/category/${c.slug}`} onClick={close}><span className="dic" style={{ background: tintOf(catArt(c.slug)) }}><Illus color name={catArt(c.slug)} size={26} /></span>{cn(lang, c)}</Link>)}
             <Link href="/browse" onClick={close}>{t("browseAZ")}</Link>
             <h4>Veda</h4>
             <Link href="/offers" onClick={close}><Icon name="tag" size={18} />{t("offers")}</Link>

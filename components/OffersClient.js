@@ -13,7 +13,7 @@ export default function OffersClient({ deals = [] }) {
       <div className="container">
         <section className="section">
           {coupons.length === 0 ? (
-            <div className="empty" style={{ padding: "30px 0" }}><Illus name="tag" size={110} /><p>{t("offersSoon")}</p></div>
+            <div className="empty" style={{ padding: "30px 0" }}><Illus color name="tag" size={110} /><p>{t("offersSoon")}</p></div>
           ) : (
             <div className="coupons">
               {coupons.map((c) => (

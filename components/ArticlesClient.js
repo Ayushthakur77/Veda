@@ -12,7 +12,7 @@ export default function ArticlesClient() {
       <div className="container"><div className="page">
         {articles.map((a) => (
           <article key={a.slug} id={a.slug} style={{ marginBottom: 28, scrollMarginTop: 120 }}>
-            <div className="art-head"><Illus name={a.art} size={56} /><small style={{ color: "var(--green)", fontWeight: 700 }}>{L(lang, a.tag)}</small></div>
+            <div className="art-head"><Illus color name={a.art} size={56} /><small style={{ color: "var(--green)", fontWeight: 700 }}>{L(lang, a.tag)}</small></div>
             <h2 style={{ marginTop: 2 }}>{L(lang, a.title)}</h2>
             {(a.body[lang] || a.body.en).map((para, n) => <p key={n}>{para}</p>)}
           </article>
