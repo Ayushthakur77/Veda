@@ -11,8 +11,8 @@ export const POST = userRoute(async ({ body, user }) => {
     return { order_no: o.order_no, cod: true, amount: o.total };
   }
   const mode = payMode();
-  if (mode === "off") throw Object.assign(new Invalid("Online payments are not available yet."), { status: 503 });
   const order = await createOrder(user, body.items, String(body.address_id || ""));
+  if (mode === "off") return { order_no: order.order_no, mode, amount: order.total }; // no gateway: customer can still choose Cash on Delivery on the payment page
   let gw;
   try { gw = await createGatewayOrder({ amountPaise: Math.round(order.total * 100), receipt: order.order_no }); }
   catch (e) { console.error("[checkout] gateway", e.message); await abandonOrder(order.id, "Payment gateway error"); throw Object.assign(new Invalid("Payment could not be started. Please try again."), { status: 502 }); }

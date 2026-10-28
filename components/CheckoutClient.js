@@ -13,17 +13,8 @@ async function call(url, method = "GET", body) {
 }
 const blank = { full_name: "", phone: "", line1: "", line2: "", landmark: "", city: "", state: "Delhi", pincode: "" };
 
-function loadRazorpay() {
-  return new Promise((res, rej) => {
-    if (window.Razorpay) return res();
-    const s = document.createElement("script");
-    s.src = "https://checkout.razorpay.com/v1/checkout.js"; s.onload = res; s.onerror = () => rej(new Error("Could not load the payment window."));
-    document.body.appendChild(s);
-  });
-}
-
 export default function CheckoutClient() {
-  const { t, lang, user, authEnabled, cart, setQty, ready } = useApp();
+  const { t, lang, user, authEnabled, cart, ready } = useApp();
   const router = useRouter();
   const items = Object.entries(cart).map(([slug, qty]) => ({ slug, qty }));
   const key = JSON.stringify(items);
@@ -35,7 +26,6 @@ export default function CheckoutClient() {
   const [form, setForm] = useState(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
-  const [method, setMethod] = useState("");
 
   useEffect(() => { const id = setTimeout(() => setLoaded(true), 800); return () => clearTimeout(id); }, []);
   useEffect(() => { if (user) setLoaded(true); }, [user]);
@@ -60,32 +50,12 @@ export default function CheckoutClient() {
     e.preventDefault(); setErr("");
     try { const r = await call("/api/addresses", "POST", form); setForm(null); setSel(r.id); await loadAddrs(); } catch (x) { setErr(x.message); }
   };
-  const done = (no) => { items.forEach((i) => setQty(i.slug, 0)); router.push(`/orders/${no}?new=1`); };
 
-  const codOk = Boolean(cfg?.cod?.enabled) && (!quote || quote.total <= cfg.cod.max);
-  const onlineOk = cfg && cfg.mode !== "off";
-  const m = method === "cod" && codOk ? "cod" : method === "online" && onlineOk ? "online" : onlineOk ? "online" : codOk ? "cod" : "";
   const pay = async () => {
     setErr(""); setBusy(true);
     try {
-      if (m === "cod") {
-        const c = await call("/api/checkout/create", "POST", { items, address_id: sel, payment_method: "cod" });
-        return done(c.order_no);
-      }
       const o = await call("/api/checkout/create", "POST", { items, address_id: sel });
-      if (o.mode === "mock") { await call("/api/checkout/mock-pay", "POST", { gateway_order_id: o.gateway_order_id }); return done(o.order_no); }
-      await loadRazorpay();
-      const rz = new window.Razorpay({
-        key: o.keyId, order_id: o.gateway_order_id, amount: o.amountPaise, currency: "INR", name: "Veda", description: o.order_no,
-        prefill: { contact: o.phone, name: o.name || undefined }, theme: { color: "#1f7a45" },
-        handler: async (resp) => {
-          try { await call("/api/checkout/verify", "POST", resp); done(o.order_no); }
-          catch (x) { setErr(x.message); setBusy(false); }
-        },
-        modal: { ondismiss: () => setBusy(false) },
-      });
-      rz.on("payment.failed", (r) => { setErr(r?.error?.description || "Payment failed. Please try again."); setBusy(false); });
-      rz.open();
+      router.push(`/pay/${o.order_no}`);
     } catch (x) { setErr(x.message); setBusy(false); }
   };
 
@@ -115,11 +85,6 @@ export default function CheckoutClient() {
               </form>
             )}
           </section>
-          <section className="box-c" style={{ marginTop: 14 }}>
-            <h3>{lang === "hi" ? "भुगतान का तरीका" : "Payment method"}</h3>
-            {onlineOk && <label className={"addr" + (m === "online" ? " on" : "")}><input type="radio" name="pm" checked={m === "online"} onChange={() => setMethod("online")} /><span><b>{lang === "hi" ? "ऑनलाइन भुगतान" : "Pay online"}</b><br />UPI, {lang === "hi" ? "कार्ड, नेटबैंकिंग" : "cards, netbanking"}</span></label>}
-            {cfg?.cod?.enabled && <label className={"addr" + (m === "cod" ? " on" : "")} style={!codOk ? { opacity: 0.6 } : undefined}><input type="radio" name="pm" disabled={!codOk} checked={m === "cod"} onChange={() => setMethod("cod")} /><span><b>{lang === "hi" ? "कैश ऑन डिलीवरी" : "Cash on Delivery"}</b><br />{codOk ? (lang === "hi" ? "डिलीवरी पर नकद या UPI से भुगतान करें" : "Pay in cash / UPI when your order arrives") : (lang === "hi" ? `₹${cfg.cod.max} से ऊपर के ऑर्डर पर उपलब्ध नहीं` : `Not available above ₹${cfg.cod.max}`)}</span></label>}
-          </section>
         </div>
         <aside className="summary">
           {quote && <>
@@ -130,9 +95,9 @@ export default function CheckoutClient() {
             {quote.shipping > 0 && <small>{t("freeShipHint")} {inr(quote.freeAbove)}</small>}
           </>}
           {err && <p className="bad" style={{ marginTop: 10 }}>{err}</p>}
-          {off && !codOk && <p className="bad" style={{ marginTop: 10 }}>{t("payOff")}</p>}
+          
           {!sel && addrs && <small>{t("noAddr")}</small>}
-          <button className="btn" style={{ width: "100%", marginTop: 14 }} disabled={!quote || !sel || busy || !m} onClick={pay}>{busy ? t("placing") : `${m === "cod" ? (lang === "hi" ? "ऑर्डर करें (COD)" : "Place order (COD)") : t("payNow")}${quote ? " · " + inr(quote.total) : ""}`}</button>
+          <button className="btn" style={{ width: "100%", marginTop: 14 }} disabled={!quote || !sel || busy} onClick={pay}>{busy ? t("placing") : `${lang === "hi" ? "भुगतान के लिए आगे बढ़ें" : "Continue to payment"}${quote ? " · " + inr(quote.total) : ""}`}</button>
           {cfg?.mode === "mock" && <small>{t("testMode")}</small>}
         </aside>
       </div>

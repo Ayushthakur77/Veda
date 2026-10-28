@@ -3,6 +3,11 @@ const G = { d: "#145a32", m: "#1f7a45", l: "#3aa56a", s: "#7cc79a", p: "#bfe3cc"
 
 const PATHS = {
   menu: <path d="M3 6h18M3 12h18M3 18h18" />,
+  back: <path d="M19 12H5M11 6l-6 6 6 6" />,
+  thumb: <path d="M7 11v9H4v-9zM7 11l4-7a2 2 0 0 1 3.5 1.8L13.7 9H19a2 2 0 0 1 2 2.4l-1.3 6.5A2 2 0 0 1 17.7 19H7" />,
+  upi: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M8 9v4a2 2 0 0 0 4 0V9M15 15V9h2a1.5 1.5 0 0 1 0 3h-2" /></>,
+  bank: <path d="M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18" />,
+  cash: <><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6.5 9.5v.01M17.5 14.5v.01" /></>,
   close: <path d="M6 6l12 12M18 6L6 18" />,
   search: <><circle cx="11" cy="11" r="7" /><path d="M21 21l-5-5" /></>,
   cart: <><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" /><circle cx="9" cy="20" r="1.5" /><circle cx="18" cy="20" r="1.5" /></>,
