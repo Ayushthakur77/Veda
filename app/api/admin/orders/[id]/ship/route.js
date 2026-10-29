@@ -22,7 +22,7 @@ export const POST = adminRoute(async ({ params }) => {
   await tx(async (c) => {
     const { rows } = await c.query(`SELECT status FROM orders WHERE id=$1 FOR UPDATE`, [params.id]);
     if (rows[0]?.status !== "packed") throw new Invalid("Order changed meanwhile.");
-    await c.query(`INSERT INTO shipments (order_id, shiprocket_order_id, shipment_id, courier_name, awb_code, tracking_url, shipping_cost, status) VALUES ($1,$2,$3,$4,$5,$6,$7,'shipped')`,
+    await c.query(`INSERT INTO shipments (order_id, shiprocket_order_id, shipment_id, courier_name, awb_code, tracking_url, shipping_cost, status, provider) VALUES ($1,$2,$3,$4,$5,$6,$7,'shipped','shiprocket')`,
       [params.id, s.shiprocket_order_id, s.shipment_id, s.courier_name, s.awb_code, s.tracking_url, s.shipping_cost]);
     await c.query(`UPDATE orders SET status='shipped' WHERE id=$1`, [params.id]);
     await c.query(`INSERT INTO order_status_history (order_id, status, note) VALUES ($1,'shipped',$2)`, [params.id, `Shiprocket · ${s.courier_name} · AWB ${s.awb_code}`]);

@@ -62,6 +62,18 @@ function OrderDrawer({ id, onClose, onChanged }) {
     try { await api(`/api/admin/orders/${id}`, "PATCH", { status: to, ...form }); setForm({}); await reload(); onChanged(); } catch (e) { setMsg(e.message); }
   };
   const [busy, setBusy] = useState(false);
+  const toggleLive = async () => {
+    const turnOn = !data.live_booking;
+    if (turnOn && !window.confirm(`Turn ON live courier booking (${data.courier_env || "staging"})?\n\nAfter this, "Book" creates REAL Shadowfax pickups. Keep it OFF while testing.`)) return;
+    setMsg(""); setBusy(true); try { await api("/api/admin/courier-settings", "PATCH", { live: turnOn }); await reload(); } catch (e) { setMsg(e.message); } setBusy(false);
+  };
+  const bookCourier = async () => {
+    const a = data.order.address_snapshot || {};
+    if (!window.confirm(`Book a REAL Shadowfax pickup for ${data.order.order_no}?\n\nDeliver to: ${a.full_name || ""}, ${a.line1 || ""}, ${a.city || ""} ${a.pincode || ""}\nPayment: ${data.order.payment_method === "cod" ? "COD ₹" + data.order.total : "Prepaid"}\n\nThe pickup is taken from the seller's address. Do not book test orders.`)) return;
+    setMsg(""); setBusy(true); try { await api(`/api/admin/orders/${id}/book`, "POST", { provider: "shadowfax" }); await reload(); onChanged(); } catch (e) { setMsg(e.message); await reload(); } setBusy(false);
+  };
+  const refreshTrack = async () => { setMsg(""); setBusy(true); try { await api(`/api/admin/orders/${id}/track`, "POST", {}); await reload(); onChanged(); } catch (e) { setMsg(e.message); } setBusy(false); };
+  const cancelShipment = async (sid) => { const reason = prompt("Reason for cancelling this courier shipment:"); if (!reason) return; setBusy(true); try { const r = await api(`/api/admin/orders/${id}/cancel-shipment`, "POST", { shipment_id: sid, reason }); if (r.message) alert(r.message); await reload(); onChanged(); } catch (e) { setMsg(e.message); } setBusy(false); };
   const autoShip = async () => {
     setMsg(""); setBusy(true);
     try { await api(`/api/admin/orders/${id}/ship`, "POST", {}); await reload(); onChanged(); } catch (e) { setMsg(e.message); }
@@ -85,6 +97,17 @@ function OrderDrawer({ id, onClose, onChanged }) {
             <tr><td><b>Total</b></td><td className="r"><b>{inrA(o.total_n)}</b></td></tr>
           </tbody></table>
           {o.status !== "cancelled" && <p><a className="btn ghost" href={`/invoice/${o.order_no}`} target="_blank" rel="noreferrer">Download / print invoice</a></p>}
+          {(data.shipments || []).length > 0 && <div className="box" style={{ marginBottom: 8 }}>
+            <h3 style={{ fontSize: 15, marginBottom: 6 }}>Courier shipments</h3>
+            {data.shipments.map((s) => <div key={s.id} style={{ padding: "4px 0" }}>
+              <b>{s.courier_name}</b> · {s.tracking_url ? <a className="link-btn" href={s.tracking_url} target="_blank" rel="noreferrer">{s.awb_code}</a> : s.awb_code} <Status s={s.status} /> {s.courier_status && <span className="muted">({s.courier_status})</span>}
+              {s.seller && <div className="muted">Pickup: {s.seller}</div>}
+              {!["delivered", "cancelled", "out_for_delivery"].includes(s.status) && <button className="link-btn" disabled={busy} onClick={() => cancelShipment(s.id)}>Cancel shipment</button>}
+            </div>)}
+            <button className="btn ghost" disabled={busy} onClick={refreshTrack}>Refresh tracking</button>
+            <p className="muted" style={{ marginTop: 6 }}>Shipping label: not available through the Shadowfax API — download it from your Shadowfax dashboard using the AWB above.</p>
+          </div>}
+          {(data.attempts || []).some((a) => a.state !== "success") && <p className="muted">Last booking attempt: {data.attempts[0].state}{data.attempts[0].error ? ` — ${data.attempts[0].error}` : ""}</p>}
           {data.shipment && <p className="muted">Shipment: {data.shipment.courier_name} · {data.shipment.awb_code}</p>}
           <h3 style={{ fontSize: 15, margin: "14px 0 6px" }}>History</h3>
           {data.history.map((h, n) => <div key={n} className="muted">{fmtDate(h.created_at)} — <b>{h.status.replace(/_/g, " ")}</b>{h.note ? ` · ${h.note}` : ""}</div>)}
@@ -100,7 +123,11 @@ function OrderDrawer({ id, onClose, onChanged }) {
               <Field label="Note (optional)"><input value={form.note || ""} onChange={set("note")} /></Field>
               {msg && <p className="bad">{msg}</p>}
               <div className="row" style={{ justifyContent: "flex-start", marginTop: 10, flexWrap: "wrap" }}>
-                {data.next.includes("shipped") && <button className="btn" disabled={busy} onClick={autoShip}>Ship via Shiprocket (auto AWB)</button>}
+                {data.next.includes("shipped") && (data.couriers || []).includes("shadowfax") && <>
+                  <button className={"btn " + (data.live_booking ? "danger" : "ghost")} disabled={busy} onClick={toggleLive} title="Master switch for real courier bookings">Live booking: {data.live_booking ? "ON (" + (data.courier_env || "") + ")" : "OFF"}</button>
+                  <button className="btn" disabled={busy || !data.live_booking} onClick={bookCourier} title={data.live_booking ? "" : "Turn Live booking ON first"}>{busy ? "Working…" : "Book Shadowfax (real pickup)"}</button>
+                </>}
+                {data.next.includes("shipped") && <button className="btn ghost" disabled={busy} onClick={autoShip}>Ship via Shiprocket</button>}
                 {data.next.map((n) => <button key={n} className={"btn" + (n === "cancelled" ? " danger" : "")} onClick={() => move(n)}>{n === "cancelled" ? "Cancel order" : "Mark " + n.replace(/_/g, " ")}</button>)}
               </div>
             </div>

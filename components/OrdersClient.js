@@ -58,7 +58,14 @@ export function OrderDetail({ no, fresh }) {
         {o.status === "cancelled" ? <p className="bad">{o.cancel_reason}</p> : o.status !== "returned" && (
           <ol className="steps">{STEPS.map((s, i) => <li key={s} className={i <= idx ? "on" : ""}>{label(s)}</li>)}</ol>
         )}
-        {d.shipment && <p>{d.shipment.courier_name} · {d.shipment.tracking_url ? <a href={d.shipment.tracking_url} target="_blank" rel="noreferrer noopener" style={{ color: "var(--green)", fontWeight: 600 }}>{d.shipment.awb_code} ({t("trackOrder")})</a> : d.shipment.awb_code}</p>}
+        {(d.shipments || []).map((sh, n, arr) => (
+          <div className="box-c" key={sh.id} style={{ marginTop: 10 }}>
+            <b>{arr.length > 1 ? `Parcel ${n + 1}${sh.seller ? " · " + sh.seller : ""} — ` : ""}{sh.courier_name} · {sh.tracking_url ? <a href={sh.tracking_url} target="_blank" rel="noreferrer noopener" style={{ color: "var(--green)" }}>{sh.awb_code}</a> : sh.awb_code}</b>
+            <div><span className="chip">{String(sh.status).replace(/_/g, " ")}</span></div>
+            {sh.events.length > 0 && <ul className="muted" style={{ margin: "8px 0 0 16px", fontSize: 13 }}>{sh.events.map((e, i) => <li key={i}>{new Date(e.event_time).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })} — {e.status_text}{e.location ? ` · ${e.location}` : ""}</li>)}</ul>}
+          </div>
+        ))}
+        {!(d.shipments || []).length && d.shipment && <p>{d.shipment.courier_name} · {d.shipment.tracking_url ? <a href={d.shipment.tracking_url} target="_blank" rel="noreferrer noopener" style={{ color: "var(--green)", fontWeight: 600 }}>{d.shipment.awb_code} ({t("trackOrder")})</a> : d.shipment.awb_code}</p>}
         <h2>{t("cart")}</h2>
         {d.items.map((i, n) => <div className="row" key={n} style={{ display: "flex", justifyContent: "space-between" }}><span>{i.name} × {i.qty}</span><span>{inr(i.unit * i.qty)}</span></div>)}
         <div className="row" style={{ display: "flex", justifyContent: "space-between", marginTop: 8 }}><span>{t("shipping")}</span><span>{o.shipping_fee ? inr(o.shipping_fee) : t("free")}</span></div>

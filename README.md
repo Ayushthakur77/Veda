@@ -74,3 +74,7 @@ Run `npm run db:migrate` (or apply `db/003_checkout.sql`) after pulling this ver
 - New seller listings start inactive; admin activates them in Listings. Suspending a seller switches off all their listings.
 - Admin can mark an order "packed" only after each seller has packed their items. Earnings count on delivered orders; admin records payouts per seller.
 - `/admin/launch` = launch checklist with email drafts. Set `COMPANY_NAME`, `GRIEVANCE_OFFICER`, `SUPPORT_EMAIL`, `SUPPORT_PHONE`, `COMPANY_ADDRESS` env for the Grievance page.
+
+## Courier (Shadowfax)
+Set `SHADOWFAX_TOKEN`, `SHADOWFAX_ENV`, `SHADOWFAX_WEBHOOK_KEY` (+ `COMPANY_*` pickup for Veda-owned products) in Vercel, then run `db/007_couriers.sql`.
+Real bookings are **blocked by default**: in Admin → Orders → open a *packed* order → press **Live booking: OFF** to switch it ON, then **Book Shadowfax**. Each booking asks for confirmation. Keep the switch OFF while testing so test orders never reach the courier. Labels are downloaded from the Shadowfax dashboard (no label API in their public docs).

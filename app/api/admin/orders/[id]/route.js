@@ -2,6 +2,9 @@ import { adminRoute, Invalid, isUuid, optStr, str } from "../../../../../lib/adm
 import { many, one, tx } from "../../../../../lib/db";
 import { FLOW } from "../../../../../lib/orders";
 import { restock } from "../../../../../lib/checkout";
+import { liveBookingOn } from "../../../../../lib/livebooking";
+import { envName } from "../../../../../lib/couriers/shadowfax";
+import { availableProviders } from "../../../../../lib/couriers";
 
 export const dynamic = "force-dynamic";
 
@@ -9,13 +12,15 @@ export const GET = adminRoute(async ({ params }) => {
   if (!isUuid(params.id)) throw new Invalid("Bad order id.");
   const order = await one(`SELECT o.*, o.total::float8 AS total_n, u.phone, u.name, u.email FROM orders o JOIN users u ON u.id=o.user_id WHERE o.id=$1`, [params.id]);
   if (!order) throw new Invalid("Order not found.");
-  const [items, history, shipment, payments] = await Promise.all([
+  const [items, history, shipment, payments, shipments, attempts] = await Promise.all([
     many(`SELECT name_snapshot, quantity, unit_price::float8 AS unit_price, mrp::float8 AS mrp FROM order_items WHERE order_id=$1 ORDER BY id`, [params.id]),
     many(`SELECT status, note, created_at FROM order_status_history WHERE order_id=$1 ORDER BY created_at, id`, [params.id]),
     one(`SELECT * FROM shipments WHERE order_id=$1 ORDER BY created_at DESC LIMIT 1`, [params.id]),
     many(`SELECT id, method, amount::float8 AS amount, status, razorpay_payment_id, created_at FROM payments WHERE order_id=$1 ORDER BY created_at`, [params.id]),
+    many(`SELECT s.id, s.provider, s.courier_name, s.awb_code, s.tracking_url, s.status, s.courier_status, s.last_synced_at, sl.business_name AS seller FROM shipments s LEFT JOIN sellers sl ON sl.id=s.seller_id WHERE s.order_id=$1 AND s.provider IS NOT NULL ORDER BY s.created_at`, [params.id]),
+    many(`SELECT state, client_order_id, awb_code, error, created_at FROM shipment_attempts WHERE order_id=$1 ORDER BY created_at DESC LIMIT 10`, [params.id]),
   ]);
-  return { order, items, history, shipment, payments, next: FLOW[order.status] || [] };
+  return { order, items, history, shipment, payments, shipments, attempts, couriers: availableProviders(), live_booking: await liveBookingOn(), courier_env: envName(), next: FLOW[order.status] || [] };
 });
 
 export const PATCH = adminRoute(async ({ params, body }) => {
