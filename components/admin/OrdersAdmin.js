@@ -8,6 +8,30 @@ const TABS = {
   cancelled: { title: "Cancellations", filters: [["cancelled", "Cancelled"]] },
 };
 
+
+function VedaPickup() {
+  const { data, reload } = useLoad("/api/admin/courier-settings");
+  const [f, setF] = useState(null); const [m, setM] = useState(""); const [open, setOpen] = useState(false);
+  const cur = f || data?.pickup || {};
+  const set = (k) => (e) => setF({ ...cur, [k]: e.target.value });
+  const save = async () => { setM(""); try { await api("/api/admin/courier-settings", "PATCH", { pickup: cur }); setF(null); await reload(); setM("Saved."); } catch (e) { setM(e.message); } };
+  const ok = cur.name && cur.address && cur.pincode;
+  return (
+    <div style={{ marginTop: 10 }}>
+      <button type="button" className="link-btn" onClick={() => setOpen(!open)}>{open ? "▾" : "▸"} Veda pickup address (for Veda's own products){ok ? "" : " — not set"}</button>
+      {open && <div className="grid2" style={{ marginTop: 8 }}>
+        <Field label="Name / business"><input value={cur.name || ""} onChange={set("name")} /></Field>
+        <Field label="Pickup phone (10 digits)"><input value={cur.phone || ""} onChange={set("phone")} /></Field>
+        <Field label="Address" wide><input value={cur.address || ""} onChange={set("address")} /></Field>
+        <Field label="City"><input value={cur.city || ""} onChange={set("city")} /></Field>
+        <Field label="Pincode"><input value={cur.pincode || ""} onChange={set("pincode")} /></Field>
+        <div><button type="button" className="btn" onClick={save}>Save pickup address</button> {m && <small>{m}</small>}</div>
+        <p className="muted" style={{ gridColumn: "1 / -1", margin: 0 }}>Products sold by a marketplace seller are picked up from that seller's own address automatically.</p>
+      </div>}
+    </div>
+  );
+}
+
 export default function OrdersAdmin({ mode = "hub" }) {
   const cfg = TABS[mode];
   const [st, setSt] = useState(cfg.filters[0][0]);
@@ -121,6 +145,7 @@ function OrderDrawer({ id, onClose, onChanged }) {
               </div>}
               {data.next.includes("cancelled") && <Field label="Cancellation reason (needed to cancel)"><input value={form.cancel_reason || ""} onChange={set("cancel_reason")} /></Field>}
               <Field label="Note (optional)"><input value={form.note || ""} onChange={set("note")} /></Field>
+              {data.next.includes("shipped") && (data.couriers || []).includes("shadowfax") && <VedaPickup />}
               {msg && <p className="bad">{msg}</p>}
               <div className="row" style={{ justifyContent: "flex-start", marginTop: 10, flexWrap: "wrap" }}>
                 {data.next.includes("shipped") && (data.couriers || []).includes("shadowfax") && <>

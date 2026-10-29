@@ -416,3 +416,14 @@ select.lang { background: #fff; color: var(--ink); border-color: var(--line); }
   .pz-m { min-width: 170px; flex: 0 0 auto; padding: 10px 12px; } .pz-m small { display: none; }
 }
 @media (max-width: 480px) { .pz-form .grid2, .pz-banks { grid-template-columns: 1fr; } }
+
+/* delivery strip on invoice: barcode, COD/prepaid box, QR */
+.inv-ship { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px dashed #9aa89f; border-radius: 8px; padding: 10px 14px; margin: 0 0 12px; flex-wrap: wrap; }
+.inv-bc { display: flex; flex-direction: column; align-items: flex-start; max-width: 100%; overflow: hidden; }
+.inv-bc svg { max-width: 100%; height: 46px; }
+.inv-bc small { font-family: monospace; letter-spacing: .06em; margin-top: 2px; }
+.inv-collect { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 16px; border-radius: 6px; text-align: center; border: 2px solid #1f6b3f; color: #1f6b3f; }
+.inv-collect.cod { border-color: #b3261e; color: #b3261e; }
+.inv-collect b { font-size: 18px; }
+.inv-qr { line-height: 0; } .inv-qr svg { width: 84px; height: 84px; }
+@media print { .inv-ship { break-inside: avoid; } .inv-collect { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }

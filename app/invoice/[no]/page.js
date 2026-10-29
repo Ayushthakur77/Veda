@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { loadInvoices } from "../../../lib/invoice";
 import PrintBtn from "../../../components/PrintBtn";
+import { barcodeSvg, qrSvg } from "../../../lib/codes";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Tax invoice", robots: { index: false, follow: false } };
@@ -29,6 +30,18 @@ export default async function Page({ params, searchParams }) {
               <tr><td>Order date</td><td>{dt(order.date)}</td></tr>
             </tbody></table>
           </header>
+          {(() => {
+            const collect = order.cod && !order.paid ? v.totals.total : 0;
+            const code = v.awb || order.no;
+            const bc = barcodeSvg(code); const qr = qrSvg(["VEDA", order.no, v.no, v.awb || "", collect ? "COD:" + collect.toFixed(2) : "PREPAID"].join("|"));
+            return (
+              <div className="inv-ship">
+                <div className="inv-bc"><div dangerouslySetInnerHTML={{ __html: bc.svg }} /><small>{v.awb ? `AWB ${v.awb}${v.courier ? " · " + v.courier : ""}` : `Order ${order.no}`}</small></div>
+                <div className={"inv-collect " + (collect ? "cod" : "pre")}>{collect ? <><small>CASH ON DELIVERY</small><b>Collect {inr(collect)}</b></> : <><small>PREPAID</small><b>Do not collect cash</b></>}</div>
+                <div className="inv-qr" dangerouslySetInnerHTML={{ __html: qr }} />
+              </div>
+            );
+          })()}
           <div className="inv-parties">
             <div><h3>Sold by (seller of record)</h3><b>{v.seller.name}</b><br />{v.seller.address}<br />
               {v.seller.gstin ? <>GSTIN: {v.seller.gstin}<br /></> : null}
