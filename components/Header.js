@@ -26,12 +26,19 @@ export default function Header({ categories = [] }) {
   };
   const close = () => setOpen(false);
   if (path?.startsWith("/admin")) return null;
+  const tabs = [
+    { href: "/", icon: "home", label: lang === "hi" ? "होम" : "Home", on: path === "/" },
+    { href: "/browse", icon: "grid", label: lang === "hi" ? "शॉप" : "Shop", on: path?.startsWith("/browse") || path?.startsWith("/category") || path?.startsWith("/product") || path?.startsWith("/search") },
+    { href: "/offers", icon: "tag", label: t("offers"), on: path?.startsWith("/offers"), mid: true },
+    { href: "/orders", icon: "box", label: lang === "hi" ? "ऑर्डर" : "Orders", on: path?.startsWith("/orders") },
+    { href: user || !authEnabled ? "/account" : "/login", icon: "user", label: t("account"), on: path?.startsWith("/account") || path?.startsWith("/login") },
+  ];
   return (
     <>
       <header className="header">
         <div className="container header-in">
           <button className="menu-btn" onClick={() => setOpen(true)} aria-label="Menu"><Icon name="menu" size={26} /></button>
-          <Brand />
+          <Brand tone="color" />
           <form className="search desk" onSubmit={submit} role="search">
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("search")} aria-label={t("search")} />
             <button type="submit" aria-label="Search"><Icon name="search" size={20} /></button>
@@ -86,6 +93,14 @@ export default function Header({ categories = [] }) {
           </aside>
         </>
       )}
+    <nav className="bnav" aria-label="Main">
+        {tabs.map((x) => (
+          <Link key={x.href} href={x.href} aria-current={x.on ? "page" : undefined} className={x.mid ? "mid" : ""}>
+            {x.mid ? <span className="pl"><Icon name={x.icon} size={22} /></span> : <Icon name={x.icon} size={22} />}
+            <span>{x.label}</span>
+          </Link>
+        ))}
+      </nav>
     </>
   );
 }

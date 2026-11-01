@@ -1,7 +1,8 @@
 // Veda icon set (UI, stroke) and illustrations (flat, green palette). Pure SVG, no emoji.
-const G = { d: "#145a32", m: "#1f7a45", l: "#3aa56a", s: "#7cc79a", p: "#bfe3cc", w: "#e9f6ee" };
+const G = { d: "#08524E", m: "#0A6B66", l: "#2A9A92", s: "#7BC4BD", p: "#BFE3DF", w: "#D6EEEA" };
 
 const PATHS = {
+  home: <path d="M3 11l9-7 9 7M5 10v10h5v-6h4v6h5V10" />,
   menu: <path d="M3 6h18M3 12h18M3 18h18" />,
   back: <path d="M19 12H5M11 6l-6 6 6 6" />,
   thumb: <path d="M7 11v9H4v-9zM7 11l4-7a2 2 0 0 1 3.5 1.8L13.7 9H19a2 2 0 0 1 2 2.4l-1.3 6.5A2 2 0 0 1 17.7 19H7" />,
