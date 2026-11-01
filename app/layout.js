@@ -16,7 +16,7 @@ export const viewport = { width: "device-width", initialScale: 1, themeColor: "#
 export default async function RootLayout({ children }) {
   const categories = await getCategories();
   return (
-    <html lang="en">
+    <html lang="en" data-theme="light">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />

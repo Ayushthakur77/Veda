@@ -1,12 +1,13 @@
 :root {
+  color-scheme: light;
   --surface2: #E8F0EE; --primary: #0A6B66; --primary-ink: #fff; --primary-soft: #D6EEEA; --shadow: 0 1px 2px rgba(18,39,42,.06), 0 6px 18px rgba(18,39,42,.06);
-  --bg: #F2F6F5; --surface: #ffffff; --ink: #12272A; --muted: #55696C;
-  --line: #D3DEDC; --green: #0A6B66; --green-d: #08524E; --green-l: #D6EEEA; --sand: #EAF1F0; --accent: #D9822B;
+  --bg: #ffffff; --surface: #ffffff; --ink: #12272A; --muted: #55696C;
+  --line: #D3DEDC; --green: #0A6B66; --green-d: #08524E; --green-l: #D6EEEA; --sand: #F2F8F7; --accent: #D9822B;
   --radius: 12px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--ink); font-family: "Figtree", "Inter", system-ui, -apple-system, "Segoe UI", "Noto Sans Devanagari", sans-serif; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body { background: #fff; color: var(--ink); font-family: "Figtree", "Inter", system-ui, -apple-system, "Segoe UI", "Noto Sans Devanagari", sans-serif; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; }
 h1, h2, h3 { font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif; font-weight: 700; letter-spacing: -0.01em; }
@@ -431,14 +432,6 @@ select.lang { background: var(--surface); color: var(--ink); border-color: var(-
 
 /* ===== Nirog look (merged into Veda) ===== */
 :root[data-theme="dark"], :root.dk { }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0D1617; --surface: #142123; --ink: #E5EFEE; --muted: #9AB0B2; --line: #26383B;
-    --green: #3FC1B6; --green-d: #2BA399; --green-l: #16393A; --sand: #1B2D30; --accent: #F0A24E; --shadow: 0 1px 2px rgba(0,0,0,.4); color-scheme: dark;
-  }
-  :root:not([data-theme="light"]) .btn { color: #04201E; }
-  :root:not([data-theme="light"]) .btn.ghost, :root:not([data-theme="light"]) .card .btn { color: var(--green); }
-}
 .inv, .inv * { color-scheme: light; }
 .inv { background: #fff; color: #1b2a22; }
 .inv-t th { background: #eef6f0; }
